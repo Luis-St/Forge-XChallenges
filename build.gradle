@@ -1,0 +1,198 @@
+plugins {
+	id "idea"
+	id "maven-publish"
+	id "net.minecraftforge.gradle" version "${ForgeGradle}"
+	id "org.spongepowered.mixin" version "${SpongePoweredMixin}"
+	id "com.github.joschi.licenser" version "${Licenser}"
+	id "io.github.themrmilchmann.curseforge-publish" version "${CurseForge}"
+}
+
+project.ext.username = System.getenv("MAVEN_USERNAME")
+project.ext.password = System.getenv("MAVEN_PASSWORD")
+project.ext.token = System.getenv("CURSEFORGE_TOKEN")
+
+minecraft {
+	mappings channel: "official", version: MinecraftVersion
+	copyIdeResources = true
+	accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
+	
+	runs {
+		client {
+			workingDirectory project.file("run")
+			
+			property "forge.logging.markers", "REGISTRIES"
+			property "forge.logging.console.level", "debug"
+			property "forge.enabledGameTestNamespaces", "xchallenges"
+			property "mixin.env.remapRefMap", "true"
+			property "mixin.env.refMapRemappingFile", "${buildDir}/createSrgToMcp/output.srg"
+			
+			mods {
+				xchallenges {
+					source sourceSets.main
+				}
+			}
+		}
+		
+		server {
+			workingDirectory project.file("run")
+			
+			property "forge.logging.markers", "REGISTRIES"
+			property "forge.logging.console.level", "debug"
+			property "forge.enabledGameTestNamespaces", "xchallenges"
+			property "mixin.env.remapRefMap", "true"
+			property "mixin.env.refMapRemappingFile", "${buildDir}/createSrgToMcp/output.srg"
+			property "forge.logging.mojang.level", "debug"
+			
+			mods {
+				xchallenges {
+					source sourceSets.main
+				}
+			}
+		}
+		
+		gameTestServer {
+			workingDirectory project.file("run")
+			
+			property "forge.logging.markers", "REGISTRIES"
+			property "forge.logging.console.level", "debug"
+			property "forge.enabledGameTestNamespaces", "xchallenges"
+			property "mixin.env.remapRefMap", "true"
+			property "mixin.env.refMapRemappingFile", "${buildDir}/createSrgToMcp/output.srg"
+			
+			mods {
+				xchallenges {
+					source sourceSets.main
+				}
+			}
+		}
+		
+		data {
+			workingDirectory project.file("run")
+			
+			property "forge.logging.markers", "REGISTRIES"
+			property "forge.logging.console.level", "debug"
+			property "forge.enabledGameTestNamespaces", "xchallenges"
+			property "mixin.env.remapRefMap", "true"
+			property "mixin.env.refMapRemappingFile", "${buildDir}/createSrgToMcp/output.srg"
+			property "xsurvive.data.include", "mod"
+			
+			args "--mod", "xchallenges", "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/")
+			
+			mods {
+				examplemod {
+					source sourceSets.main
+				}
+			}
+		}
+	}
+}
+
+mixin {
+	add sourceSets.main, "mixins.xchallenges.refmap.json"
+	config "xchallenges.mixins.json"
+	debug.export = true
+}
+
+sourceSets.main.resources {srcDir "src/generated/resources"}
+
+dependencies {
+	minecraft "net.minecraftforge:forge:${MinecraftVersion}-${ForgeVersion}"
+	
+	annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+}
+
+compileJava.dependsOn(updateLicenses)
+
+license {
+	header = file("header.txt")
+	include("**/*.java")
+}
+
+java {
+	withSourcesJar()
+}
+
+artifacts {
+	archives sourcesJar
+}
+
+def ver = "${MinecraftVersion}-${ModVersion}"
+curseforge {
+	apiToken = "${project.ext.token}"
+	publications {
+		register("curseForge") {
+			projectId = "995352"
+			
+			artifacts.register("main") {
+				displayName = "XChallenges-${ver}"
+				from(tasks.named("jar"))
+			}
+		}
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			groupId = "net.luis"
+			artifactId = "XChallenges"
+			version = ver
+			artifact jar
+			artifact sourcesJar
+		}
+	}
+	repositories {
+		if (project.ext.username != null && project.ext.password != null) {
+			maven {
+				url "https://maven.luis-st.net/forge/"
+				credentials.username = username
+				credentials.password = password
+			}
+		} else {
+			System.err.println("No credentials provided. Publishing to maven.luis-st.net not possible.")
+		}
+	}
+}
+
+def resourceTargets = ["META-INF/mods.toml"]
+def replaceProperties = [
+	MinecraftVersion: MinecraftVersion, MinecraftVersionRange: MinecraftVersionRange,
+	ForgeVersion: ForgeVersion, ForgeVersionRange: ForgeVersionRange,
+	ForgeLoaderRange: ForgeLoaderRange, ModVersion: ModVersion,
+	XBackpackVersion: XBackpackVersion, XOresVersion: XOresVersion
+]
+processResources {
+	inputs.properties replaceProperties
+	replaceProperties.put "project", project
+	
+	filesMatching(resourceTargets) {
+		expand replaceProperties
+	}
+}
+
+jar {
+	archiveFileName = "XChallenges-${ver}.jar"
+	manifest {
+		attributes([
+			"Specification-Title": "XChallenges",
+			"Specification-Version": "${MinecraftVersion}-${ModVersion}",
+			"Implementation-Title": project.name,
+			"Implementation-Timestamp": new Date().format("yyyy-MM-dd HH:mm:ssZ")
+		])
+	}
+	finalizedBy("reobfJar")
+}
+
+sourcesJar {
+	outputs.upToDateWhen {false}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = "UTF-8"
+}
+
+sourceSets.each {
+	def dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
+	it.output.resourcesDir = dir
+	it.java.destinationDirectory = dir
+}

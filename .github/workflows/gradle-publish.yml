@@ -1,0 +1,87 @@
+name: Publish to maven and curseforge
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: read
+
+jobs:
+  license-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4.1.1
+      - name: 'Set up Oracle JDK 21'
+        uses: oracle-actions/setup-java@v1
+        with:
+          website: oracle.com
+          release: 21
+      - name: 'Grant Permission to Gradle'
+        run: chmod +x gradlew
+      - name: 'License check with Gradle'
+        uses: gradle/actions/setup-gradle@v3.1.0
+        with:
+          arguments: licenseCheck
+  build:
+    needs: license-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4.1.1
+      - name: 'Set up Oracle JDK 21'
+        uses: oracle-actions/setup-java@v1
+        with:
+          website: oracle.com
+          release: 21
+      - name: 'Grant Permission to Gradle'
+        run: chmod +x gradlew
+      - name: 'Build with Gradle'
+        uses: gradle/actions/setup-gradle@v3.1.0
+        with:
+          arguments: build
+  publish-maven:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: Default
+    env:
+      MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4.1.1
+      - name: 'Set up Oracle JDK 21'
+        uses: oracle-actions/setup-java@v1
+        with:
+          website: oracle.com
+          release: 21
+      - name: 'Grant Permission to Gradle'
+        run: chmod +x gradlew
+      - name: 'Publish with Gradle'
+        uses: gradle/actions/setup-gradle@v3.1.0
+        with:
+          arguments: publish
+  publish-curseforge:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: Default
+    env:
+      MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4.1.1
+      - name: 'Set up Oracle JDK 21'
+        uses: oracle-actions/setup-java@v1
+        with:
+          website: oracle.com
+          release: 21
+      - name: 'Grant Permission to Gradle'
+        run: chmod +x gradlew
+      - name: 'Publish with Gradle'
+        uses: gradle/actions/setup-gradle@v3.1.0
+        with:
+          arguments: publishCurseForgePublicationToCurseForge

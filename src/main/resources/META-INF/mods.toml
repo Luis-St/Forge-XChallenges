@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "${ForgeLoaderRange}"
+license = "All rights reserved"
+
+[[mods]]
+modId = "xchallenges"
+version = "${MinecraftVersion}-${ModVersion}"
+displayName = "XChallenges"
+credits = "Thanks for downloading my Mod"
+authors = "Luis"
+displayURL = "https://github.com/Luis-St/Forge-XChallenges/issues"
+description = '''
+XChallenges is a challenge mod
+
+Have a lot of fun when playing
+XChallenges Development Team
+'''
+
+[[dependencies.xchallenges]]
+modId = "forge"
+mandatory = true
+versionRange = "${ForgeVersionRange}"
+ordering = "BEFORE"
+side = "BOTH"
+
+[[dependencies.xchallenges]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${MinecraftVersionRange}"
+ordering = "NONE"
+side = "BOTH"

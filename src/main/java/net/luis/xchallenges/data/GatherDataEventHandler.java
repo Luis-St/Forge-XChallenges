@@ -50,7 +50,6 @@ public class GatherDataEventHandler {
 	public static void gatherData(@NotNull GatherDataEvent event) throws IOException {
 		DataGenerator generator = event.getGenerator();
 		if (event.includeDev()) {
-			generator.addProvider(event.includeClient(), new XCBlockStateProvider(generator, event.getExistingFileHelper()));
 			generator.addProvider(event.includeClient(), new XCLanguageProvider(generator));
 			generator.addProvider(event.includeServer(), new XCLootTableProvider(generator));
 			generator.addProvider(event.includeServer(), new XCRecipeProvider(generator));

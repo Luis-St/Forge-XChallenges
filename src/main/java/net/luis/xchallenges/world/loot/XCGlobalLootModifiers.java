@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.luis.xchallenges.world.level.storage.loot;
+package net.luis.xchallenges.world.loot;
 
 import com.mojang.serialization.Codec;
 import net.luis.xchallenges.XChallenges;

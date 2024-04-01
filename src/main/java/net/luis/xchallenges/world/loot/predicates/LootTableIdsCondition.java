@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.luis.xchallenges.world.level.storage.loot.predicates;
+package net.luis.xchallenges.world.loot.predicates;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;

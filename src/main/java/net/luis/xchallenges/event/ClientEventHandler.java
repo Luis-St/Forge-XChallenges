@@ -20,11 +20,8 @@ package net.luis.xchallenges.event;
 
 import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.challenges.Timer;
-import net.luis.xchallenges.server.commands.ChallengesCommand;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 public class ClientEventHandler {
 	
 	@SubscribeEvent
-	public static void clientTick(TickEvent. @NotNull ClientTickEvent event) {
+	public static void clientTick(TickEvent.@NotNull ClientTickEvent event) {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (event.phase == TickEvent.Phase.START && minecraft.isSingleplayer() && !minecraft.isPaused()) {
 			tick();

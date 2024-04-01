@@ -20,7 +20,6 @@ package net.luis.xchallenges.network.packet;
 
 import net.luis.xchallenges.client.XCClientPacketHandler;
 import net.luis.xchallenges.network.NetworkPacket;
-import net.luis.xchallenges.network.XCNetworkHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 import org.jetbrains.annotations.NotNull;

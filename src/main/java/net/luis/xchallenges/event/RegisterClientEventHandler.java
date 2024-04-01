@@ -20,14 +20,11 @@ package net.luis.xchallenges.event;
 
 import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.client.renderer.gui.overlay.TimerOverlay;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
  * @author Luis-St
  *
  */
-
 
 @Mod.EventBusSubscriber(modid = XChallenges.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class RegisterClientEventHandler {

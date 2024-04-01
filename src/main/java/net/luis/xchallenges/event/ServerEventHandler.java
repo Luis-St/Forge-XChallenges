@@ -21,8 +21,6 @@ package net.luis.xchallenges.event;
 import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.challenges.Timer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,7 +38,7 @@ public class ServerEventHandler {
 	private static int tickCount = 0;
 	
 	@SubscribeEvent
-	public static void serverTick(TickEvent. @NotNull ServerTickEvent event) {
+	public static void serverTick(TickEvent.@NotNull ServerTickEvent event) {
 		if (event.phase == TickEvent.Phase.START) {
 			tickCount++;
 			tick(event.getServer());

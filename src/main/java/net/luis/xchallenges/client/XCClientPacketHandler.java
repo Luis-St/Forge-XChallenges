@@ -18,10 +18,24 @@
 
 package net.luis.xchallenges.client;
 
+import net.luis.xchallenges.XChallenges;
+import net.luis.xchallenges.challenges.Timer;
+
 /**
  *
  * @author Luis-St
  *
  */
 
-public class XCClientPacketHandler {}
+public class XCClientPacketHandler {
+	
+	public static void syncTimer(long serverTime, boolean down, boolean up, boolean running, long ticks, long currentTicks) {
+		if (down == up) {
+			XChallenges.LOGGER.warn("Received invalid timer sync packet: down = {}, up = {}", down, up);
+			return;
+		}
+		Timer timer = Timer.getInstance();
+		timer.update(down, up, running, ticks, currentTicks);
+		XChallenges.LOGGER.info("Updated timer from server '{}'", timer);
+	}
+}

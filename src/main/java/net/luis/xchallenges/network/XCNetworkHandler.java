@@ -20,6 +20,7 @@ package net.luis.xchallenges.network;
 
 import com.google.common.collect.Lists;
 import net.luis.xchallenges.XChallenges;
+import net.luis.xchallenges.network.packet.SyncTimerPacket;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -52,7 +53,9 @@ public enum XCNetworkHandler {
 		this.simpleChannel = ChannelBuilder.named(new ResourceLocation(XChallenges.MOD_ID, "simple_channel")).acceptedVersions((status, version) -> true).simpleChannel();
 	}
 	
-	public void registerPackets() {}
+	public void registerPackets() {
+		this.registerPacket(SyncTimerPacket.class, SyncTimerPacket::encode, SyncTimerPacket::new, SyncTimerPacket::handle);
+	}
 	
 	private <T extends NetworkPacket> void registerPacket(Class<T> clazz, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, CustomPayloadEvent.Context> consumer) {
 		this.simpleChannel.messageBuilder(clazz, this.id++, NetworkDirection.PLAY_TO_CLIENT).encoder(encoder).decoder(decoder).consumerMainThread(consumer).add();

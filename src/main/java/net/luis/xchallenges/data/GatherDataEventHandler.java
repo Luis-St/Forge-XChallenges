@@ -19,15 +19,9 @@
 package net.luis.xchallenges.data;
 
 import net.luis.xchallenges.XChallenges;
-import net.luis.xchallenges.data.provider.XCBuiltinProvider;
-import net.luis.xchallenges.data.provider.block.XCBlockStateProvider;
 import net.luis.xchallenges.data.provider.language.XCLanguageProvider;
 import net.luis.xchallenges.data.provider.loot.XCGlobalLootModifierProvider;
-import net.luis.xchallenges.data.provider.loottable.XCLootTableProvider;
-import net.luis.xchallenges.data.provider.recipe.XCRecipeProvider;
-import net.luis.xchallenges.data.provider.tag.*;
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -35,7 +29,6 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Set;
 
 /**
  *
@@ -51,16 +44,7 @@ public class GatherDataEventHandler {
 		DataGenerator generator = event.getGenerator();
 		if (event.includeDev()) {
 			generator.addProvider(event.includeClient(), new XCLanguageProvider(generator));
-			generator.addProvider(event.includeServer(), new XCLootTableProvider(generator));
-			generator.addProvider(event.includeServer(), new XCRecipeProvider(generator));
-			XCBlockTagsProvider blockTagsProvider = new XCBlockTagsProvider(generator, event.getLookupProvider(), event.getExistingFileHelper());
-			generator.addProvider(event.includeServer(), blockTagsProvider);
-			generator.addProvider(event.includeServer(), new XCItemTagsProvider(generator, event.getLookupProvider(), blockTagsProvider.contentsGetter(), event.getExistingFileHelper()));
-			generator.addProvider(event.includeServer(), new XCPoiTypeTagsProvider(generator, event.getLookupProvider(), event.getExistingFileHelper()));
-			generator.addProvider(event.includeServer(), new XCBiomeTagsProvider(generator, event.getLookupProvider(), event.getExistingFileHelper()));
-			generator.addProvider(event.includeServer(), new XCDamageTypeTagsProvider(generator, event.getLookupProvider(), event.getExistingFileHelper()));
 			generator.addProvider(event.includeServer(), new XCGlobalLootModifierProvider(generator));
-			generator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(generator.getPackOutput(), event.getLookupProvider(), XCBuiltinProvider.createProvider(), Set.of(XChallenges.MOD_ID)));
 		}
 	}
 }

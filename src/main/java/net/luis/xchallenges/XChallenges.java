@@ -20,6 +20,7 @@ package net.luis.xchallenges;
 
 import com.mojang.logging.LogUtils;
 import net.luis.xchallenges.network.XCNetworkHandler;
+import net.luis.xchallenges.server.commands.arguments.XCCommandArgumentTypes;
 import net.luis.xchallenges.world.loot.XCGlobalLootModifiers;
 import net.luis.xchallenges.world.loot.predicates.XCLootItemConditions;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -44,6 +45,7 @@ public class XChallenges {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		XCLootItemConditions.LOOT_ITEM_CONDITIONS.register(eventBus);
 		XCGlobalLootModifiers.LOOT_MODIFIERS.register(eventBus);
+		XCCommandArgumentTypes.COMMAND_ARGUMENT_TYPES.register(eventBus);
 		XCNetworkHandler.INSTANCE.initChannel();
 		XCNetworkHandler.INSTANCE.registerPackets();
 	}

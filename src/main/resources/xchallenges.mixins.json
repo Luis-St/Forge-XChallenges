@@ -3,9 +3,12 @@
 	"package": "net.luis.xchallenges.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"refmap": "mixins.xchallenges.refmap.json",
-	"mixins": [],
+	"mixins": [
+		"MinecraftServerMixin"
+	],
 	"client": [
-		"client.GuiMixin"
+		"client.GuiMixin",
+		"client.MinecraftMixin"
 	],
 	"server": [],
 	"injectors": {

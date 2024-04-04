@@ -19,7 +19,7 @@
 package net.luis.xchallenges.client;
 
 import net.luis.xchallenges.XChallenges;
-import net.luis.xchallenges.challenges.Timer;
+import net.minecraft.client.Minecraft;
 
 /**
  *
@@ -29,13 +29,12 @@ import net.luis.xchallenges.challenges.Timer;
 
 public class XCClientPacketHandler {
 	
-	public static void syncTimer(long serverTime, boolean down, boolean up, boolean running, long ticks, long currentTicks) {
-		if (down == up) {
-			XChallenges.LOGGER.warn("Received invalid timer sync packet: down = {}, up = {}", down, up);
-			return;
+	public static void syncTimer(boolean running, long ticks, long currentTicks) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft instanceof IMinecraft mc) {
+			mc.getTimer().update(running, ticks, currentTicks);
+		} else {
+			XChallenges.LOGGER.error("Minecraft is not an instance of IMinecraft");
 		}
-		Timer timer = Timer.getInstance();
-		timer.update(down, up, running, ticks, currentTicks);
-		XChallenges.LOGGER.info("Updated timer from server '{}'", timer);
 	}
 }

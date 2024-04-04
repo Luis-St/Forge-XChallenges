@@ -19,9 +19,10 @@
 package net.luis.xchallenges.event;
 
 import net.luis.xchallenges.XChallenges;
-import net.luis.xchallenges.challenges.Timer;
-import net.minecraft.server.MinecraftServer;
+import net.luis.xchallenges.server.IMinecraftServer;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
@@ -35,22 +36,40 @@ import org.jetbrains.annotations.NotNull;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = XChallenges.MOD_ID)
 public class ServerEventHandler {
 	
-	private static int tickCount = 0;
+	private static final String BASE_PATH = "xchallenges";
+	private static long tick = 0;
+	
+	@SubscribeEvent
+	public static void serverStarting(@NotNull ServerStartingEvent event) {
+		if (!(event.getServer() instanceof IMinecraftServer server)) {
+			XChallenges.LOGGER.error("Server is not an instance of IMinecraftServer");
+			return;
+		}
+		server.getTimer().load(server.getWorldPath().resolve(BASE_PATH));
+	}
 	
 	@SubscribeEvent
 	public static void serverTick(TickEvent.@NotNull ServerTickEvent event) {
-		if (event.phase == TickEvent.Phase.START) {
-			tickCount++;
-			tick(event.getServer());
+		if (event.phase != TickEvent.Phase.START) {
+			return;
+		}
+		if (!(event.getServer() instanceof IMinecraftServer server)) {
+			XChallenges.LOGGER.error("Server is not an instance of IMinecraftServer");
+			return;
+		}
+		server.getTimer().tick();
+		tick++;
+		if (tick % (20 * 60) == 0) {
+			server.getTimer().sync();
 		}
 	}
 	
-	private static void tick(@NotNull MinecraftServer server) {
-		Timer timer = Timer.getInstance();
-		timer.tick();
-		if (!timer.isPaused() && tickCount % (20 * 60) == 0) {
-			XChallenges.LOGGER.info("Syncing timer '{}'", timer);
-			timer.sync();
+	@SubscribeEvent
+	public static void serverStopping(@NotNull ServerStoppingEvent event) {
+		if (!(event.getServer() instanceof IMinecraftServer server)) {
+			XChallenges.LOGGER.error("Server is not an instance of IMinecraftServer");
+			return;
 		}
+		server.getTimer().save(server.getWorldPath().resolve(BASE_PATH));
 	}
 }

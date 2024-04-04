@@ -18,8 +18,9 @@
 
 package net.luis.xchallenges.client.renderer.gui.overlay;
 
-import net.luis.xchallenges.challenges.Timer;
 import net.luis.xchallenges.client.IGui;
+import net.luis.xchallenges.client.IMinecraft;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
@@ -40,7 +41,11 @@ public class TimerOverlay implements IGuiOverlay {
 		if (gui instanceof IGui iGui && iGui.getOverlayMessage() != null) {
 			return;
 		}
-		String timer = Timer.getInstance().toString();
+		Minecraft minecraft = Minecraft.getInstance();
+		if (!(minecraft instanceof IMinecraft mc)) {
+			return;
+		}
+		String timer = mc.getTimer().toString();
 		int yShift = Math.max(gui.leftHeight, gui.rightHeight) + (68 - 59);
 		graphics.pose().pushPose();
 		graphics.pose().translate(screenWidth / 2.0, screenHeight - Math.max(yShift, 68), 0.0);

@@ -18,10 +18,15 @@
 
 package net.luis.xchallenges.challenges;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.network.XCNetworkHandler;
 import net.luis.xchallenges.network.packet.SyncTimerPacket;
+import net.luis.xchallenges.server.CodecHelper;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
 import java.time.Duration;
 
 /**
@@ -32,29 +37,35 @@ import java.time.Duration;
 
 public class Timer {
 	
-	private static final ThreadLocal<Timer> instance = ThreadLocal.withInitial(Timer::createPaused);
+	public static final Codec<Timer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		Codec.LONG.fieldOf("ticks").forGetter(Timer::getTicks),
+		Codec.LONG.fieldOf("current_ticks").forGetter(Timer::getCurrentTicks),
+		Codec.BOOL.fieldOf("running").forGetter(Timer::isPaused)
+	).apply(instance, Timer::new));
 	
-	private Mode mode = Mode.UP;
-	private long ticks = -1;
-	private long currentTicks;
-	private boolean running;
+	protected long ticks = -1;
+	protected long currentTicks;
+	protected boolean running;
 	
-	public static @NotNull Timer getInstance() {
-		return instance.get();
+	private Timer() {}
+	
+	private Timer(long ticks, long currentTicks, boolean running) {
+		this.ticks = ticks;
+		this.currentTicks = currentTicks;
+		this.running = running;
 	}
 	
-	private static @NotNull Timer createPaused() {
-		Timer timer = new Timer();
-		timer.pause();
-		return timer;
+	public static @NotNull Timer create() {
+		return new Timer();
 	}
 	
+	//region Getters
 	public boolean isUp() {
-		return this.mode == Mode.UP;
+		return this.ticks == -1;
 	}
 	
 	public boolean isDown() {
-		return this.mode == Mode.DOWN;
+		return this.ticks > 0;
 	}
 	
 	public long getTicks() {
@@ -68,23 +79,26 @@ public class Timer {
 	public boolean isPaused() {
 		return !this.running;
 	}
+	//endregion
 	
 	public void tick() {
 		if (!this.running) {
 			return;
 		}
-		if (this.mode == Mode.UP) {
+		if (this.ticks == -1) {
 			this.currentTicks++;
-		} else if (this.mode == Mode.DOWN) {
+		} else if (this.ticks > 0) {
 			if (this.currentTicks > 0) {
 				this.currentTicks--;
 			} else {
 				this.currentTicks = 0;
 				this.running = false;
+				this.sync();
 			}
 		}
 	}
 	
+	//region Actions
 	public void pause() {
 		this.running = false;
 	}
@@ -99,64 +113,80 @@ public class Timer {
 	}
 	
 	public void reset() {
-		if (this.mode == Mode.UP) {
-			this.ticks = -1;
+		if (this.ticks == -1) {
 			this.currentTicks = 0;
-		} else if (this.mode == Mode.DOWN) {
+		} else if (this.ticks > 0) {
 			this.currentTicks = this.ticks;
 		}
 	}
 	
 	public void makeUp() {
-		this.mode = Mode.UP;
 		this.ticks = -1;
 		this.currentTicks = 0;
 		this.running = false;
 	}
 	
 	public void makeDown(long ticks) {
-		if (ticks < 0) {
-			throw new IllegalArgumentException("Down timer must have positive ticks");
+		if (0 >= ticks) {
+			throw new IllegalArgumentException("The ticks must be greater than 0");
 		}
-		this.mode = Mode.DOWN;
 		this.ticks = ticks;
 		this.currentTicks = ticks;
 		this.running = false;
 	}
+	//endregion
+	
+	//region IO operations
+	public void load(@NotNull Path path) {
+		Timer loaded = CodecHelper.load(Timer.CODEC, path.resolve("timer.json"));
+		XChallenges.LOGGER.info("Loaded timer '{}' from '{}'", loaded, path.resolve("timer.json"));
+		if (loaded != null) {
+			this.ticks = loaded.ticks;
+			this.currentTicks = loaded.currentTicks;
+			this.running = loaded.running;
+		}
+	}
 	
 	public void sync() {
-		XCNetworkHandler.INSTANCE.sendToPlayers(new SyncTimerPacket(System.currentTimeMillis(), this.isDown(), this.isUp(), this.running, this.ticks, this.currentTicks));
+		XChallenges.LOGGER.info("Syncing timer '{}' to players", this.toString());
+		XCNetworkHandler.INSTANCE.sendToPlayers(new SyncTimerPacket(this.running, this.ticks, this.currentTicks));
 	}
 	
-	public void update(boolean down, boolean up, boolean running, long ticks, long currentTicks) {
-		if (down) {
-			this.makeDown(ticks);
-		} else if (up) {
-			this.makeUp();
-		}
+	public void update(boolean running, long ticks, long currentTicks) {
+		String old = this.toString();
 		this.running = running;
+		this.ticks = ticks;
 		this.currentTicks = currentTicks;
+		XChallenges.LOGGER.info("Synced timer from '{}' (old, client) to '{}' (new, server)", old, this.toString());
 	}
 	
+	public void save(@NotNull Path path) {
+		CodecHelper.save(this, Timer.CODEC, path.resolve("timer.json"));
+		XChallenges.LOGGER.info("Saved timer '{}' to '{}'", this.toString(), path.resolve("timer.json"));
+	}
+	//endregion
+	
+	//region Object overrides
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
 		if (!this.running) {
-			if (this.mode == Mode.UP) {
-				sb.append("Paused");
-				return sb.toString();
-			} else if (this.mode == Mode.DOWN) {
+			if (this.ticks == -1) {
+				return "Paused";
+			} else if (this.ticks > 0) {
 				if (this.currentTicks == this.ticks) {
-					sb.append("Stopped");
+					return this.toString(this.ticks);
 				} else if (this.currentTicks == 0) {
-					sb.append("Finished");
-				} else {
-					sb.append("Paused");
+					return "Finished";
 				}
-				return sb.toString();
 			}
+			return "Paused";
 		}
-		Duration duration = Duration.ofMillis(this.currentTicks * 50);
+		return this.toString(this.currentTicks);
+	}
+	
+	private @NotNull String toString(long ticks) {
+		Duration duration = Duration.ofMillis(ticks * 50);
+		StringBuilder sb = new StringBuilder();
 		if (duration.toDays() > 0) {
 			sb.append(duration.toDays());
 			sb.append("d ");
@@ -172,9 +202,5 @@ public class Timer {
 		sb.append(duration.toSeconds() % 60).append("s");
 		return sb.toString();
 	}
-	
-	private enum Mode {
-		
-		UP, DOWN;
-	}
+	//endregion
 }

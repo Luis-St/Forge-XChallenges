@@ -20,9 +20,14 @@ package net.luis.xchallenges.server.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.challenges.Timer;
+import net.luis.xchallenges.server.IMinecraftServer;
+import net.luis.xchallenges.server.commands.arguments.RealTimeArgument;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -39,42 +44,50 @@ public class TimerCommand {
 		dispatcher.register(Commands.literal("timer").requires((stack) -> {
 			return stack.hasPermission(2);
 		}).then(Commands.literal("start").executes((context) -> {
-				return execute(Timer::resume);
+				return execute(context.getSource(), context.getSource().getServer(), Timer::resume, "start");
 			})
 		).then(Commands.literal("stop").executes((context) -> {
-				return execute(Timer::stop);
+				return execute(context.getSource(), context.getSource().getServer(), Timer::stop, "stop");
 			})
 		).then(Commands.literal("pause").executes((context) -> {
-				return execute(Timer::pause);
+				return execute(context.getSource(), context.getSource().getServer(), Timer::pause, "pause");
 			})
 		).then(Commands.literal("resume").executes((context) -> {
-				return execute(Timer::resume);
+				return execute(context.getSource(), context.getSource().getServer(), Timer::resume, "resume");
 			})
 		).then(Commands.literal("reset").executes((context) -> {
-				return execute(Timer::reset);
+				return execute(context.getSource(), context.getSource().getServer(), Timer::reset, "reset");
 			})
-		).then(Commands.literal("set").then(Commands.argument("minutes", IntegerArgumentType.integer()).executes((context) -> {
-					return make(IntegerArgumentType.getInteger(context, "minutes"));
+		).then(Commands.literal("set").then(Commands.argument("time", RealTimeArgument.time(1)).executes((context) -> {
+					return make(context.getSource(), context.getSource().getServer(), IntegerArgumentType.getInteger(context, "time"));
 				})
 			)
 		));
 	}
 	
-	private static int make(int minutes) {
-		Timer timer = Timer.getInstance();
-		if (minutes > 0) {
-			timer.makeDown(minutes * 60L * 20L);
-		} else {
-			timer.makeUp();
+	private static int make(@NotNull CommandSourceStack source, @NotNull MinecraftServer server, int time) {
+		if (!(server instanceof IMinecraftServer mc)) {
+			source.sendFailure(Component.translatable("xchallenges.error.critical"));
+			XChallenges.LOGGER.error("Minecraft server is not an instance of IMinecraftServer");
+			return -1;
 		}
+		Timer timer = mc.getTimer();
+		timer.makeDown(time * 20L);
+		source.sendSuccess(() -> Component.translatable("commands.xchallenges.timer.set"), false);
 		timer.sync();
 		return 0;
 	}
 	
-	private static int execute(@NotNull Consumer<Timer> action) {
-		Timer timer = Timer.getInstance();
+	private static int execute(@NotNull CommandSourceStack source, @NotNull MinecraftServer server, @NotNull Consumer<Timer> action, String message) {
+		if (!(server instanceof IMinecraftServer mc)) {
+			source.sendFailure(Component.translatable("xchallenges.error.critical"));
+			XChallenges.LOGGER.error("Minecraft server is not an instance of IMinecraftServer");
+			return -1;
+		}
+		Timer timer = mc.getTimer();
 		action.accept(timer);
 		timer.sync();
+		source.sendSuccess(() -> Component.translatable("commands.xchallenges.timer." + message), false);
 		return 0;
 	}
 }

@@ -19,10 +19,9 @@
 package net.luis.xchallenges.event;
 
 import net.luis.xchallenges.XChallenges;
-import net.luis.xchallenges.client.IMinecraft;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
+import net.luis.xchallenges.server.IMinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
@@ -33,21 +32,17 @@ import org.jetbrains.annotations.NotNull;
  *
  */
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = XChallenges.MOD_ID, value = Dist.CLIENT)
-public class ClientEventHandler {
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = XChallenges.MOD_ID)
+public class PlayerEventHandler {
 	
 	@SubscribeEvent
-	public static void clientTick(TickEvent.@NotNull ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.START) {
-			return;
-		}
-		Minecraft minecraft = Minecraft.getInstance();
-		if (!(minecraft instanceof IMinecraft mc)) {
-			XChallenges.LOGGER.error("Minecraft is not an instance of IMinecraft");
-			return;
-		}
-		if (!minecraft.isSingleplayer() || !minecraft.isPaused()) {
-			mc.getTimer().tick();
+	public static void playerLoggedIn(PlayerEvent.@NotNull PlayerLoggedInEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			if (player.getServer() instanceof IMinecraftServer server) {
+				server.getTimer().sync();
+			} else {
+				XChallenges.LOGGER.error("Server is not an instance of IMinecraftServer");
+			}
 		}
 	}
 }

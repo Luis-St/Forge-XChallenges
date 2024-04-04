@@ -1,0 +1,13 @@
+{
+  "arguments.xchallenges.enum.invalid": "Invalid enum {0}",
+  "arguments.xchallenges.real_time.invalid_unit": "Invalid unit {0}",
+  "arguments.xchallenges.real_time.time_too_low": "Time {0} scaled with unit {1} is too low, minimum is {2}",
+  "commands.xchallenges.randomizer.apply_target.update": "Updated randomizer apply target to {0}",
+  "commands.xchallenges.timer.pause": "Timer paused",
+  "commands.xchallenges.timer.reset": "Timer reset",
+  "commands.xchallenges.timer.resume": "Timer resumed",
+  "commands.xchallenges.timer.set": "Set timer",
+  "commands.xchallenges.timer.start": "Timer started",
+  "commands.xchallenges.timer.stop": "Timer stopped",
+  "xchallenges.error.critical": "A critical server error occurred, please check the server log for more information"
+}

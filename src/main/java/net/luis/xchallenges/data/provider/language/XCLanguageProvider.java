@@ -59,7 +59,21 @@ public class XCLanguageProvider extends LanguageProvider {
 	}
 	
 	@Override
-	protected void addTranslations() {}
+	protected void addTranslations() {
+		String id = XChallenges.MOD_ID;
+		this.add(id + ".error.critical", "A critical server error occurred, please check the server log for more information");
+		
+		this.add("commands." + id + ".timer.start", "Timer started");
+		this.add("commands." + id + ".timer.stop", "Timer stopped");
+		this.add("commands." + id + ".timer.pause", "Timer paused");
+		this.add("commands." + id + ".timer.resume", "Timer resumed");
+		this.add("commands." + id + ".timer.reset", "Timer reset");
+		this.add("commands." + id + ".timer.set", "Set timer");
+		
+		this.add("arguments." + id + ".enum.invalid", "Invalid enum {0}");
+		this.add("arguments." + id + ".real_time.invalid_unit", "Invalid unit {0}");
+		this.add("arguments." + id + ".real_time.time_too_low", "Time {0} scaled with unit {1} is too low, minimum is {2}");
+	}
 	
 	@Override
 	public @NotNull String getName() {

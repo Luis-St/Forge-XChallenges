@@ -37,4 +37,7 @@ public class XCCommandArgumentTypes {
 	public static final RegistryObject<EnumArgument.Info<?>> ENUM = COMMAND_ARGUMENT_TYPES.register("enum", () -> {
 		return ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info());
 	});
+	public static final RegistryObject<RealTimeArgument.Info> REAL_TIME = COMMAND_ARGUMENT_TYPES.register("real_time", () -> {
+		return ArgumentTypeInfos.registerByClass(RealTimeArgument.class, new RealTimeArgument.Info());
+	});
 }

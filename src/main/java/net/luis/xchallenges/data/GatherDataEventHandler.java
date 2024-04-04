@@ -44,7 +44,7 @@ public class GatherDataEventHandler {
 		DataGenerator generator = event.getGenerator();
 		if (event.includeDev()) {
 			generator.addProvider(event.includeClient(), new XCLanguageProvider(generator));
-			generator.addProvider(event.includeServer(), new XCGlobalLootModifierProvider(generator));
+			//generator.addProvider(event.includeServer(), new XCGlobalLootModifierProvider(generator));
 		}
 	}
 }

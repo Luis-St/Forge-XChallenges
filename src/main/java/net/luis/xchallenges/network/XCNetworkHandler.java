@@ -50,7 +50,7 @@ public enum XCNetworkHandler {
 	private SimpleChannel simpleChannel;
 	
 	public void initChannel() {
-		this.simpleChannel = ChannelBuilder.named(new ResourceLocation(XChallenges.MOD_ID, "simple_channel")).acceptedVersions((status, version) -> true).simpleChannel();
+		this.simpleChannel = ChannelBuilder.named(new ResourceLocation(XChallenges.MOD_ID, "simple_channel")).networkProtocolVersion(1).acceptedVersions((status, version) -> version == 1).simpleChannel();
 	}
 	
 	public void registerPackets() {

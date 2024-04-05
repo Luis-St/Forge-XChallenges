@@ -67,6 +67,9 @@ public class XCLanguageProvider extends LanguageProvider {
 		this.add("arguments." + id + ".enum.invalid", "Invalid enum provided {0}");
 		this.add("arguments." + id + ".real_time.invalid_unit", "Invalid unit provided {0}");
 		this.add("arguments." + id + ".real_time.time_too_low", "Time {0} scaled with unit {1} is too low, minimum is {2}");
+		// Challenges command
+		this.add("commands." + id + ".challenges.start", "Started challenges");
+		this.add("commands." + id + ".challenges.stop", "Stopped challenges");
 		// Timer command
 		this.add("commands." + id + ".timer.start", "Timer started");
 		this.add("commands." + id + ".timer.stop", "Timer stopped");

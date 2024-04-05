@@ -124,7 +124,7 @@ public class RealTimeArgument implements ArgumentType<Integer> {
 			
 			private final int min;
 			
-			Template(int min) {
+			private Template(int min) {
 				this.min = min;
 			}
 			

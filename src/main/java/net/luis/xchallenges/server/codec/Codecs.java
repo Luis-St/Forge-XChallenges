@@ -20,7 +20,6 @@ package net.luis.xchallenges.server.codec;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.luis.xchallenges.server.commands.arguments.NameableArgument;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -37,8 +36,8 @@ import java.util.stream.Collectors;
 
 public class Codecs {
 	
-	public static <E extends Enum<E> & NameableArgument> @NotNull Codec<E> forEnum(@NotNull Supplier<E[]> supplier) {
-		Map<String, E> map = Arrays.stream(supplier.get()).collect(Collectors.toMap(NameableArgument::getArgumentName, Function.identity()));
+	public static <E extends Enum<E>> @NotNull Codec<E> forEnum(@NotNull Supplier<E[]> supplier) {
+		Map<String, E> map = Arrays.stream(supplier.get()).collect(Collectors.toMap(Enum::toString, Function.identity()));
 		return Codec.STRING.flatXmap(str -> {
 			E value = map.get(str.toLowerCase());
 			if (value == null) {

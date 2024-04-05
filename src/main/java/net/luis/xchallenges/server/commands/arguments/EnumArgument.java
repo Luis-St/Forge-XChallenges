@@ -44,20 +44,20 @@ import java.util.stream.Stream;
  *
  */
 
-public class EnumArgument<T extends Enum<T> & NameableArgument> implements ArgumentType<T> {
+public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	
 	private static final DynamicCommandExceptionType INVALID_ENUM = new DynamicCommandExceptionType(found -> Component.translatable("arguments.xchallenges.enum.invalid", found));
 	private final Class<T> clazz;
 	
-	private EnumArgument(final Class<T> clazz) {
+	private EnumArgument(Class<T> clazz) {
 		this.clazz = clazz;
 	}
 	
-	public static <R extends Enum<R> & NameableArgument> @NotNull EnumArgument<R> argument(Class<R> clazz) {
+	public static <R extends Enum<R>> @NotNull EnumArgument<R> argument(Class<R> clazz) {
 		return new EnumArgument<>(clazz);
 	}
 	
-	public static <R extends Enum<R> & NameableArgument> @NotNull R get(@NotNull CommandContext<?> context, @NotNull String name, @NotNull Class<R> clazz) {
+	public static <R extends Enum<R>> @NotNull R get(@NotNull CommandContext<?> context, @NotNull String name, @NotNull Class<R> clazz) {
 		return context.getArgument(name, clazz);
 	}
 	
@@ -69,7 +69,7 @@ public class EnumArgument<T extends Enum<T> & NameableArgument> implements Argum
 			throw INVALID_ENUM.create(name);
 		}
 		for (T constant : constants) {
-			if (constant.getArgumentName().equals(name)) {
+			if (constant.toString().equals(name)) {
 				return constant;
 			}
 		}
@@ -78,17 +78,17 @@ public class EnumArgument<T extends Enum<T> & NameableArgument> implements Argum
 	
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-		return SharedSuggestionProvider.suggest(Stream.of(this.clazz.getEnumConstants()).map(NameableArgument::getArgumentName), builder);
+		return SharedSuggestionProvider.suggest(Stream.of(this.clazz.getEnumConstants()).map(Enum::toString), builder);
 	}
 	
 	@Override
 	public Collection<String> getExamples() {
-		return Stream.of(this.clazz.getEnumConstants()).map(NameableArgument::getArgumentName).collect(Collectors.toList());
+		return Stream.of(this.clazz.getEnumConstants()).map(Enum::toString).collect(Collectors.toList());
 	}
 	
 	//region Argument info
 	@SuppressWarnings("ReturnOfInnerClass")
-	public static class Info<T extends Enum<T> & NameableArgument> implements ArgumentTypeInfo<EnumArgument<T>, Info<T>.Template> {
+	public static class Info<T extends Enum<T>> implements ArgumentTypeInfo<EnumArgument<T>, Info<T>.Template> {
 		
 		@Override
 		public void serializeToNetwork(EnumArgument.Info.@NotNull Template template, @NotNull FriendlyByteBuf buffer) {
@@ -100,7 +100,7 @@ public class EnumArgument<T extends Enum<T> & NameableArgument> implements Argum
 		public EnumArgument.Info<T>.@NotNull Template deserializeFromNetwork(@NotNull FriendlyByteBuf buffer) {
 			try {
 				String name = buffer.readUtf();
-				return new EnumArgument.Info<T>.Template((Class<T>) Class.forName(name));
+				return new Template((Class<T>) Class.forName(name));
 			} catch (ClassNotFoundException e) {
 				throw new RuntimeException(e);
 			}
@@ -120,7 +120,7 @@ public class EnumArgument<T extends Enum<T> & NameableArgument> implements Argum
 			
 			private final Class<T> clazz;
 			
-			Template(Class<T> clazz) {
+			private Template(Class<T> clazz) {
 				this.clazz = clazz;
 			}
 			
@@ -131,7 +131,7 @@ public class EnumArgument<T extends Enum<T> & NameableArgument> implements Argum
 			
 			@Override
 			public @NotNull ArgumentTypeInfo<EnumArgument<T>, ?> type() {
-				return EnumArgument.Info.this;
+				return Info.this;
 			}
 		}
 	}

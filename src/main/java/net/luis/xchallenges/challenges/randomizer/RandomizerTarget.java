@@ -20,8 +20,6 @@ package net.luis.xchallenges.challenges.randomizer;
 
 import com.mojang.serialization.Codec;
 import net.luis.xchallenges.server.codec.Codecs;
-import net.luis.xchallenges.server.commands.arguments.NameableArgument;
-import org.jetbrains.annotations.NotNull;
 
 /**
  *
@@ -29,20 +27,20 @@ import org.jetbrains.annotations.NotNull;
  *
  */
 
-public enum RandomizerTarget implements NameableArgument {
+public enum RandomizerTarget {
 	
 	ALL("all"), TEAM("team"), PLAYER("player");
 	
 	public static final Codec<RandomizerTarget> CODEC = Codecs.forEnum(RandomizerTarget::values);
 	
-	private final String argumentName;
+	private final String name;
 	
-	private RandomizerTarget(String argumentName) {
-		this.argumentName = argumentName;
+	private RandomizerTarget(String name) {
+		this.name = name;
 	}
 	
 	@Override
-	public @NotNull String getArgumentName() {
-		return this.argumentName;
+	public String toString() {
+		return this.name;
 	}
 }

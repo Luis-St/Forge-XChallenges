@@ -141,7 +141,7 @@ public class RandomizerCommand {
 				return -1;
 			}
 			mc.getRandomizeManager().createRandomizer(type, target);
-			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.enable.success", type.getName(), target.getArgumentName()), false);
+			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.enable.success", type.getName(), target), false);
 			return 0;
 		}).orElse(-1);
 	}
@@ -154,7 +154,7 @@ public class RandomizerCommand {
 				return -1;
 			}
 			mc.getRandomizeManager().getRandomizer(type).setTarget(target);
-			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.update_target.success", type.getName(), target.getArgumentName()), false);
+			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.update_target.success", type.getName(), target), false);
 			return 0;
 		}).orElse(-1);
 	}

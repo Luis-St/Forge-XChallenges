@@ -63,6 +63,7 @@ public class XCLanguageProvider extends LanguageProvider {
 		String id = XChallenges.MOD_ID;
 		// Global errors
 		this.add(id + ".error.critical", "A critical server error occurred, please check the server log for more information");
+		this.add(id + ".error.modifications_not_allowed", "Modifications to {0} are not allowed while challenges are running");
 		// Command arguments
 		this.add("arguments." + id + ".enum.invalid", "Invalid enum provided {0}");
 		this.add("arguments." + id + ".real_time.invalid_unit", "Invalid unit provided {0}");
@@ -78,6 +79,18 @@ public class XCLanguageProvider extends LanguageProvider {
 		this.add("commands." + id + ".timer.reset_current", "Reset timer to current configuration");
 		this.add("commands." + id + ".timer.reset_default", "Reset timer to default configuration");
 		this.add("commands." + id + ".timer.set", "Set timer");
+		// Randomizer command
+		this.add("commands." + id + ".randomizer.status", "{0} randomizer is {1}");
+		this.add("commands." + id + ".randomizer.enable.success", "Enabled randomizer {0} with target {1}");
+		this.add("commands." + id + ".randomizer.enable.failure", "Randomizer {0} is already enabled");
+		this.add("commands." + id + ".randomizer.update_target.success", "Updated target of randomizer {0} to {1}");
+		this.add("commands." + id + ".randomizer.update_target.failure", "Randomizer {0} is not enabled");
+		this.add("commands." + id + ".randomizer.disable.success", "Disabled randomizer {0}");
+		this.add("commands." + id + ".randomizer.disable.failure", "Randomizer {0} is already disabled");
+		this.add("commands." + id + ".randomizer.load.success", "Loaded randomizer configuration from");
+		this.add("commands." + id + ".randomizer.load.failure", "Randomizer configuration {0} does not exist in {1}");
+		this.add("commands." + id + ".randomizer.save.success", "Saved current randomizer configuration to");
+		this.add("commands." + id + ".randomizer.save.failure", "A configuration with the name {0} already exists in {1}");
 	}
 	
 	@Override

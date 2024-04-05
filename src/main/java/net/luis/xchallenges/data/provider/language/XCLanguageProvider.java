@@ -87,10 +87,17 @@ public class XCLanguageProvider extends LanguageProvider {
 		this.add("commands." + id + ".randomizer.update_target.failure", "Randomizer {0} is not enabled");
 		this.add("commands." + id + ".randomizer.disable.success", "Disabled randomizer {0}");
 		this.add("commands." + id + ".randomizer.disable.failure", "Randomizer {0} is already disabled");
-		this.add("commands." + id + ".randomizer.load.success", "Loaded randomizer configuration from");
-		this.add("commands." + id + ".randomizer.load.failure", "Randomizer configuration {0} does not exist in {1}");
-		this.add("commands." + id + ".randomizer.save.success", "Saved current randomizer configuration to");
-		this.add("commands." + id + ".randomizer.save.failure", "A configuration with the name {0} already exists in {1}");
+		this.add("commands." + id + ".randomizer.storage.list.not_found", "No randomizers found");
+		this.add("commands." + id + ".randomizer.storage.list.empty", "No randomizer configurations have been saved");
+		this.add("commands." + id + ".randomizer.storage.list.header", "Found {0} randomizer configurations:");
+		this.add("commands." + id + ".randomizer.storage.list.entry", " - {0}");
+		this.add("commands." + id + ".randomizer.storage.load.success", "Loaded randomizer configuration {0}");
+		this.add("commands." + id + ".randomizer.storage.load.failure", "Randomizer configuration {0} does not exist in {1}");
+		this.add("commands." + id + ".randomizer.storage.save.success", "Saved current randomizer configuration to");
+		this.add("commands." + id + ".randomizer.storage.save.failure", "A configuration with name {0} already exists in {1}");
+		this.add("commands." + id + ".randomizer.storage.delete.success", "Marked randomizer configuration {0} for deletion, the configuration will be deleted on server restart");
+		this.add("commands." + id + ".randomizer.storage.delete.not_found", "Randomizer configuration {0} does not exist in {1}");
+		this.add("commands." + id + ".randomizer.storage.delete.is_directory", "Expected a file named {0}, but found a directory");
 	}
 	
 	@Override

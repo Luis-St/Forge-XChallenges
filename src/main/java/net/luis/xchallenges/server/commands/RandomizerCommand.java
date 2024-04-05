@@ -27,18 +27,18 @@ import net.luis.xchallenges.challenges.randomizer.RandomizerType;
 import net.luis.xchallenges.server.IMinecraftServer;
 import net.luis.xchallenges.server.commands.arguments.EnumArgument;
 import net.minecraft.ChatFormatting;
+import net.minecraft.FileUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.*;
-import net.minecraft.network.chat.Component;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
+import java.util.*;
 
 /**
  *
@@ -82,14 +82,22 @@ public class RandomizerCommand {
 				)
 			);
 		}
-		builder.then(Commands.literal("load").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
-					return loadRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+		builder.then(Commands.literal("storage").then(Commands.literal("list").executes((context) -> {
+					return listRandomizers(context.getSource());
 				})
 			)
-		);
-		builder.then(Commands.literal("save").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
-					return saveRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
-				})
+			.then(Commands.literal("load").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+						return loadRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+					})
+				)
+			).then(Commands.literal("save").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+						return saveRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+					})
+				)
+			).then(Commands.literal("delete").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+						return deleteRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+					})
+				)
 			)
 		);
 		
@@ -171,32 +179,75 @@ public class RandomizerCommand {
 		}).orElse(-1);
 	}
 	
+	private static int listRandomizers(@NotNull CommandSourceStack source) {
+		return getMinecraftServer(source).map(mc -> {
+			Path path = mc.getWorldPath().resolve(BASE_PATH);
+			if (Files.notExists(path)) {
+				source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.list.not_found"), false);
+				XChallenges.LOGGER.error("Randomizer configuration directory {} does not exist", path);
+				return 0;
+			}
+			Collection<File> files = FileUtils.listFiles(path.toFile(), new String[] { "json" }, false);
+			if (files.isEmpty()) {
+				source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.list.empty"), false);
+				XChallenges.LOGGER.info("No randomizer configurations have been saved");
+				return 0;
+			}
+			XChallenges.LOGGER.info("Found {} randomizer configurations", files.size());
+			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.list.header", files.size()), false);
+			files.forEach(file -> {
+				String name = file.getName().toLowerCase().replace(".json", "");
+				source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.list.entry", name), false);
+			});
+			return 0;
+		}).orElse(-1);
+	}
+	
 	private static int loadRandomizer(@NotNull CommandSourceStack source, @NotNull String name) {
-		return getMinecraftServer(source).filter(mc -> allowModifications(source, mc)).map(mc -> {
+		return getMinecraftServer(source).map(mc -> {
 			Path path = mc.getWorldPath().resolve(BASE_PATH).resolve(name + ".json");
 			if (Files.notExists(path)) {
-				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.load.failure", name, path.getParent()));
+				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.storage.load.failure", name, path.getParent()));
 				XChallenges.LOGGER.error("Randomizer configuration {} does not exist", path);
 				return -1;
 			}
 			mc.getRandomizeManager().load(mc.getWorldPath().resolve(BASE_PATH), name);
 			XChallenges.LOGGER.info("Loaded randomizer configuration from {}", path);
-			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.load.success").append(" ").append(createClickablePath(path, name)), false);
+			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.load.success", name), false);
 			return 0;
 		}).orElse(-1);
 	}
 	
 	private static int saveRandomizer(@NotNull CommandSourceStack source, @NotNull String name) {
-		return getMinecraftServer(source).filter(mc -> allowModifications(source, mc)).map(mc -> {
+		return getMinecraftServer(source).map(mc -> {
 			Path path = mc.getWorldPath().resolve(BASE_PATH).resolve(name + ".json");
 			if (Files.exists(path)) {
-				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.save.failure", name, path.getParent()));
+				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.storage.save.failure", name, path.getParent()));
 				XChallenges.LOGGER.error("Randomizer configuration {} already exists", path);
 				return -1;
 			}
 			mc.getRandomizeManager().save(mc.getWorldPath().resolve(BASE_PATH), name);
 			XChallenges.LOGGER.info("Saved current randomizer configuration to {}", path);
-			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.save.success").append(" ").append(createClickablePath(path, name)), false);
+			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.save.success").append(" ").append(createClickablePath(path, name)), false);
+			return 0;
+		}).orElse(-1);
+	}
+	
+	private static int deleteRandomizer(@NotNull CommandSourceStack source, @NotNull String name) {
+		return getMinecraftServer(source).map(mc -> {
+			Path path = mc.getWorldPath().resolve(BASE_PATH).resolve(name + ".json");
+			if (Files.notExists(path)) {
+				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.storage.delete.not_found", name, path.getParent()));
+				XChallenges.LOGGER.error("Randomizer configuration {} does not exist", path);
+				return -1;
+			}
+			if (!path.toFile().isFile()) {
+				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.storage.delete.is_directory", name));
+				return -1;
+			}
+			path.toFile().deleteOnExit();
+			XChallenges.LOGGER.info("Marked randomizer configuration {} for deletion", path);
+			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.delete.success", name), false);
 			return 0;
 		}).orElse(-1);
 	}

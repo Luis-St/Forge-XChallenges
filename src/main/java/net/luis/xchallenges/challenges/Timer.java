@@ -139,13 +139,14 @@ public class Timer {
 	
 	//region IO operations
 	public void load(@NotNull Path path) {
-		Timer loaded = CodecHelper.load(Timer.CODEC, path.resolve("timer.json"));
-		XChallenges.LOGGER.info("Loaded timer '{}' from '{}'", loaded, path.resolve("timer.json"));
-		if (loaded != null) {
-			this.ticks = loaded.ticks;
-			this.currentTicks = loaded.currentTicks;
-			this.running = loaded.running;
+		Timer loaded = CodecHelper.load(Timer.CODEC, path);
+		if (loaded == null) {
+			return;
 		}
+		XChallenges.LOGGER.info("Loaded timer '{}' from '{}'", loaded, path);
+		this.ticks = loaded.ticks;
+		this.currentTicks = loaded.currentTicks;
+		this.running = loaded.running;
 	}
 	
 	public void sync() {
@@ -162,8 +163,8 @@ public class Timer {
 	}
 	
 	public void save(@NotNull Path path) {
-		CodecHelper.save(this, Timer.CODEC, path.resolve("timer.json"));
-		XChallenges.LOGGER.info("Saved timer '{}' to '{}'", this.toString(), path.resolve("timer.json"));
+		CodecHelper.save(this, Timer.CODEC, path);
+		XChallenges.LOGGER.info("Saved timer '{}' to '{}'", this.toString(), path);
 	}
 	//endregion
 	

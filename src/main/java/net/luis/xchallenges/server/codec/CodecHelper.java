@@ -26,8 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 
 /**
  *
@@ -56,6 +55,7 @@ public class CodecHelper {
 	
 	public static <T> void save(@NotNull T object, @NotNull Codec<T> codec, @NotNull Path file) {
 		try {
+			Files.deleteIfExists(file);
 			if (Files.notExists(file)) {
 				Files.createDirectories(file.getParent());
 				Files.createFile(file);

@@ -18,6 +18,7 @@
 
 package net.luis.xchallenges.server;
 
+import net.luis.xchallenges.challenges.ChallengesManager;
 import net.luis.xchallenges.challenges.Timer;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +32,11 @@ import java.nio.file.Path;
 
 public interface IMinecraftServer {
 	
-	@NotNull Timer getTimer();
+	@NotNull ChallengesManager getChallengesManager();
+	
+	default @NotNull Timer getTimer() {
+		return this.getChallengesManager().getTimer();
+	}
 	
 	@NotNull Path getWorldPath();
 }

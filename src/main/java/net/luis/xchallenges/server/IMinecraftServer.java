@@ -20,6 +20,7 @@ package net.luis.xchallenges.server;
 
 import net.luis.xchallenges.challenges.ChallengesManager;
 import net.luis.xchallenges.challenges.Timer;
+import net.luis.xchallenges.challenges.randomizer.RandomizeManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -36,6 +37,10 @@ public interface IMinecraftServer {
 	
 	default @NotNull Timer getTimer() {
 		return this.getChallengesManager().getTimer();
+	}
+	
+	default @NotNull RandomizeManager getRandomizeManager() {
+		return this.getChallengesManager().getRandomizeManager();
 	}
 	
 	@NotNull Path getWorldPath();

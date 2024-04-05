@@ -37,5 +37,6 @@ public class RegisterEventHandler {
 	@SubscribeEvent
 	public static void registerCommands(@NotNull RegisterCommandsEvent event) {
 		TimerCommand.register(event.getDispatcher());
+		ChallengesCommand.register(event.getDispatcher());
 	}
 }

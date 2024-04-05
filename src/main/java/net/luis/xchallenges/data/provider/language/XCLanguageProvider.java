@@ -63,7 +63,6 @@ public class XCLanguageProvider extends LanguageProvider {
 		String id = XChallenges.MOD_ID;
 		// Global errors
 		this.add(id + ".error.critical", "A critical server error occurred, please check the server log for more information");
-		
 		// Command arguments
 		this.add("arguments." + id + ".enum.invalid", "Invalid enum provided {0}");
 		this.add("arguments." + id + ".real_time.invalid_unit", "Invalid unit provided {0}");

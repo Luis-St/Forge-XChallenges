@@ -23,7 +23,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.network.XCNetworkHandler;
 import net.luis.xchallenges.network.packet.SyncTimerPacket;
-import net.luis.xchallenges.server.CodecHelper;
+import net.luis.xchallenges.server.codec.CodecHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;

@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.luis.xchallenges.server;
+package net.luis.xchallenges.server.codec;
 
 import com.google.gson.*;
 import com.mojang.serialization.Codec;
@@ -39,6 +39,21 @@ public class CodecHelper {
 	
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	
+	public static <T> @Nullable T load(@NotNull Codec<T> codec, @NotNull Path file) {
+		try {
+			if (Files.notExists(file)) {
+				return null;
+			}
+			BufferedReader reader = new BufferedReader(new FileReader(file.toFile()));
+			JsonElement element = GSON.fromJson(reader, JsonElement.class);
+			reader.close();
+			return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {});
+		} catch (IOException e) {
+			XChallenges.LOGGER.error("Could not load object from file '{}'", file, e);
+			return null;
+		}
+	}
+	
 	public static <T> void save(@NotNull T object, @NotNull Codec<T> codec, @NotNull Path file) {
 		try {
 			if (Files.notExists(file)) {
@@ -53,22 +68,6 @@ public class CodecHelper {
 			writer.close();
 		} catch (IOException e) {
 			XChallenges.LOGGER.error("Could not save object '{}' to file '{}'", object, file, e);
-		}
-	}
-	
-	public static <T> @Nullable T load(@NotNull Codec<T> codec, @NotNull Path file) {
-		try {
-			if (Files.notExists(file)) {
-				XChallenges.LOGGER.info("The file '{}' does not exists", file);
-				return null;
-			}
-			BufferedReader reader = new BufferedReader(new FileReader(file.toFile()));
-			JsonElement element = GSON.fromJson(reader, JsonElement.class);
-			reader.close();
-			return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {});
-		} catch (IOException e) {
-			XChallenges.LOGGER.error("Could not load object from file '{}'", file, e);
-			return null;
 		}
 	}
 }

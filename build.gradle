@@ -25,7 +25,7 @@ minecraft {
 			property "forge.enabledGameTestNamespaces", "xchallenges"
 			property "mixin.env.remapRefMap", "true"
 			property "mixin.env.refMapRemappingFile", "${buildDir}/createSrgToMcp/output.srg"
-			property "forge.logging.mojang.level", "debug"
+			//property "forge.logging.mojang.level", "debug"
 			
 			mods {
 				xchallenges {
@@ -42,7 +42,7 @@ minecraft {
 			property "forge.enabledGameTestNamespaces", "xchallenges"
 			property "mixin.env.remapRefMap", "true"
 			property "mixin.env.refMapRemappingFile", "${buildDir}/createSrgToMcp/output.srg"
-			property "forge.logging.mojang.level", "debug"
+			//property "forge.logging.mojang.level", "debug"
 			
 			mods {
 				xchallenges {

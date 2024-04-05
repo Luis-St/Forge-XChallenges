@@ -40,7 +40,7 @@ public class Timer {
 	public static final Codec<Timer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.LONG.fieldOf("ticks").forGetter(Timer::getTicks),
 		Codec.LONG.fieldOf("current_ticks").forGetter(Timer::getCurrentTicks),
-		Codec.BOOL.fieldOf("running").forGetter(Timer::isPaused)
+		Codec.BOOL.fieldOf("running").forGetter(timer -> timer.running)
 	).apply(instance, Timer::new));
 	
 	protected long ticks = -1;

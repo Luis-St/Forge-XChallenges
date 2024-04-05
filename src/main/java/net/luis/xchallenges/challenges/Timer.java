@@ -107,17 +107,18 @@ public class Timer {
 		this.running = true;
 	}
 	
-	public void stop() {
-		this.running = false;
-		this.reset();
-	}
-	
-	public void reset() {
+	public void resetCurrent() {
 		if (this.ticks == -1) {
 			this.currentTicks = 0;
 		} else if (this.ticks > 0) {
 			this.currentTicks = this.ticks;
 		}
+	}
+	
+	public void resetDefault() {
+		this.ticks = -1;
+		this.currentTicks = 0;
+		this.running = false;
 	}
 	
 	public void makeUp() {

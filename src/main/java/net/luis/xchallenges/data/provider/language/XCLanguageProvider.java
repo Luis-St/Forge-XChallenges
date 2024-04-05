@@ -61,18 +61,21 @@ public class XCLanguageProvider extends LanguageProvider {
 	@Override
 	protected void addTranslations() {
 		String id = XChallenges.MOD_ID;
+		// Global errors
 		this.add(id + ".error.critical", "A critical server error occurred, please check the server log for more information");
 		
+		// Command arguments
+		this.add("arguments." + id + ".enum.invalid", "Invalid enum provided {0}");
+		this.add("arguments." + id + ".real_time.invalid_unit", "Invalid unit provided {0}");
+		this.add("arguments." + id + ".real_time.time_too_low", "Time {0} scaled with unit {1} is too low, minimum is {2}");
+		// Timer command
 		this.add("commands." + id + ".timer.start", "Timer started");
 		this.add("commands." + id + ".timer.stop", "Timer stopped");
 		this.add("commands." + id + ".timer.pause", "Timer paused");
 		this.add("commands." + id + ".timer.resume", "Timer resumed");
-		this.add("commands." + id + ".timer.reset", "Timer reset");
+		this.add("commands." + id + ".timer.reset_current", "Reset timer to current configuration");
+		this.add("commands." + id + ".timer.reset_default", "Reset timer to default configuration");
 		this.add("commands." + id + ".timer.set", "Set timer");
-		
-		this.add("arguments." + id + ".enum.invalid", "Invalid enum {0}");
-		this.add("arguments." + id + ".real_time.invalid_unit", "Invalid unit {0}");
-		this.add("arguments." + id + ".real_time.time_too_low", "Time {0} scaled with unit {1} is too low, minimum is {2}");
 	}
 	
 	@Override

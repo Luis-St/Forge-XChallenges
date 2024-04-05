@@ -27,6 +27,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
+
 /**
  *
  * @author Luis-St
@@ -45,7 +47,8 @@ public class ServerEventHandler {
 			XChallenges.LOGGER.error("Server is not an instance of IMinecraftServer");
 			return;
 		}
-		server.getTimer().load(server.getWorldPath().resolve(BASE_PATH));
+		Path path = server.getWorldPath().resolve(BASE_PATH);
+		server.getChallengesManager().load(path);
 	}
 	
 	@SubscribeEvent
@@ -70,6 +73,7 @@ public class ServerEventHandler {
 			XChallenges.LOGGER.error("Server is not an instance of IMinecraftServer");
 			return;
 		}
-		server.getTimer().save(server.getWorldPath().resolve(BASE_PATH));
+		Path path = server.getWorldPath().resolve(BASE_PATH);
+		server.getChallengesManager().save(path);
 	}
 }

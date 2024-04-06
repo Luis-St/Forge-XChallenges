@@ -83,22 +83,21 @@ public class RandomizerCommand {
 			);
 		}
 		builder.then(Commands.literal("storage").then(Commands.literal("list").executes((context) -> {
-						return listRandomizers(context.getSource());
+					return listRandomizers(context.getSource());
+				})
+			).then(Commands.literal("load").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+						return loadRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
 					})
 				)
-				.then(Commands.literal("load").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
-							return loadRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
-						})
-					)
-				).then(Commands.literal("save").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
-							return saveRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
-						})
-					)
-				).then(Commands.literal("delete").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
-							return deleteRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
-						})
-					)
+			).then(Commands.literal("save").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+						return saveRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+					})
 				)
+			).then(Commands.literal("delete").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+						return deleteRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+					})
+				)
+			)
 		);
 		
 		dispatcher.register(builder);

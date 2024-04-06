@@ -21,11 +21,12 @@ package net.luis.xchallenges.challenges;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.luis.xchallenges.XChallenges;
-import net.luis.xchallenges.challenges.randomizer.RandomizeManager;
+import net.luis.xchallenges.challenges.randomizer.Randomizer;
 import net.luis.xchallenges.server.codec.CodecHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  *
@@ -41,7 +42,7 @@ public class Challenges {
 	private static Challenges instance = null;
 	
 	private final Timer timer = Timer.create();
-	private final RandomizeManager randomizeManager = new RandomizeManager();
+	private final Randomizer randomizer = new Randomizer();
 	private boolean running;
 	
 	//region Constructors
@@ -80,15 +81,16 @@ public class Challenges {
 		return this.timer;
 	}
 	
-	public @NotNull RandomizeManager getRandomizeManager() {
-		return this.randomizeManager;
+	public @NotNull Randomizer getRandomizer() {
+		return this.randomizer;
 	}
 	
-	
-	
-	
-	
-	
+	public @NotNull Optional<Randomizer> getRandomizerIfActive() {
+		if (!this.areChallengesActive() || this.getRandomizer().hasNone()) {
+			return Optional.empty();
+		}
+		return Optional.of(this.getRandomizer());
+	}
 	
 	//region IO operations
 	public void load(@NotNull Path path) {
@@ -98,14 +100,14 @@ public class Challenges {
 			this.running = manager.running;
 		}
 		this.timer.load(path.resolve("timer.json"));
-		this.randomizeManager.load(path, "randomizer");
+		this.randomizer.load(path, "randomizer");
 	}
 	
 	public void save(@NotNull Path path) {
 		CodecHelper.save(this, CODEC, path.resolve("challenges.json"));
 		XChallenges.LOGGER.info("Saved challenges to {}", path.resolve("challenges.json"));
 		this.timer.save(path.resolve("timer.json"));
-		this.randomizeManager.save(path, "randomizer");
+		this.randomizer.save(path, "randomizer");
 	}
 	//endregion
 }

@@ -27,7 +27,6 @@ import net.luis.xchallenges.challenges.randomizer.RandomizerType;
 import net.luis.xchallenges.server.IMinecraftServer;
 import net.luis.xchallenges.server.commands.arguments.EnumArgument;
 import net.minecraft.ChatFormatting;
-import net.minecraft.FileUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.*;
@@ -84,22 +83,22 @@ public class RandomizerCommand {
 			);
 		}
 		builder.then(Commands.literal("storage").then(Commands.literal("list").executes((context) -> {
-					return listRandomizers(context.getSource());
-				})
-			)
-			.then(Commands.literal("load").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
-						return loadRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+						return listRandomizers(context.getSource());
 					})
 				)
-			).then(Commands.literal("save").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
-						return saveRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
-					})
+				.then(Commands.literal("load").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+							return loadRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+						})
+					)
+				).then(Commands.literal("save").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+							return saveRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+						})
+					)
+				).then(Commands.literal("delete").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
+							return deleteRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
+						})
+					)
 				)
-			).then(Commands.literal("delete").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
-						return deleteRandomizer(context.getSource(), StringArgumentType.getString(context, "name"));
-					})
-				)
-			)
 		);
 		
 		dispatcher.register(builder);
@@ -136,7 +135,7 @@ public class RandomizerCommand {
 	
 	private static int getRandomizerStatus(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type) {
 		return getMinecraftServer(source).map(mc -> {
-			String status = mc.getRandomizeManager().hasRandomizer(type) ? "enabled" : "disabled";
+			String status = mc.getRandomizer().has(type) ? "enabled" : "disabled";
 			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.status", StringUtils.capitalize(type.getName()), status), false);
 			return 0;
 		}).orElse(-1);
@@ -144,12 +143,12 @@ public class RandomizerCommand {
 	
 	private static int enableRandomizer(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type, @NotNull RandomizerTarget target) {
 		return getMinecraftServer(source).filter(mc -> allowModifications(source, mc)).map(mc -> {
-			if (mc.getRandomizeManager().hasRandomizer(type)) {
+			if (mc.getRandomizer().has(type)) {
 				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.enable.failure", type.getName()));
 				XChallenges.LOGGER.error("Randomizer {} is already enabled", type.getName());
 				return -1;
 			}
-			mc.getRandomizeManager().createRandomizer(type, target);
+			mc.getRandomizer().create(type, target);
 			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.enable.success", type.getName(), target), false);
 			return 0;
 		}).orElse(-1);
@@ -157,12 +156,12 @@ public class RandomizerCommand {
 	
 	private static int updateRandomizerTarget(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type, @NotNull RandomizerTarget target) {
 		return getMinecraftServer(source).filter(mc -> allowModifications(source, mc)).map(mc -> {
-			if (!mc.getRandomizeManager().hasRandomizer(type)) {
+			if (!mc.getRandomizer().has(type)) {
 				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.update_target.failure", type.getName()));
 				XChallenges.LOGGER.error("Randomizer {} is not enabled", type.getName());
 				return -1;
 			}
-			mc.getRandomizeManager().getRandomizer(type).setTarget(target);
+			mc.getRandomizer().get(type).setTarget(target);
 			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.update_target.success", type.getName(), target), false);
 			return 0;
 		}).orElse(-1);
@@ -170,7 +169,7 @@ public class RandomizerCommand {
 	
 	private static int disableRandomizer(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type) {
 		return getMinecraftServer(source).filter(mc -> allowModifications(source, mc)).map(mc -> {
-			if (mc.getRandomizeManager().remove(type)) {
+			if (mc.getRandomizer().remove(type)) {
 				source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.disable.success", type.getName()), false);
 				return 0;
 			}
@@ -212,7 +211,7 @@ public class RandomizerCommand {
 				XChallenges.LOGGER.error("Randomizer configuration {} does not exist", path);
 				return -1;
 			}
-			mc.getRandomizeManager().load(mc.getWorldPath().resolve(BASE_PATH), name);
+			mc.getRandomizer().load(mc.getWorldPath().resolve(BASE_PATH), name);
 			XChallenges.LOGGER.info("Loaded randomizer configuration from {}", path);
 			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.load.success", name), false);
 			return 0;
@@ -227,7 +226,7 @@ public class RandomizerCommand {
 				XChallenges.LOGGER.error("Randomizer configuration {} already exists", path);
 				return -1;
 			}
-			mc.getRandomizeManager().save(mc.getWorldPath().resolve(BASE_PATH), name);
+			mc.getRandomizer().save(mc.getWorldPath().resolve(BASE_PATH), name);
 			XChallenges.LOGGER.info("Saved current randomizer configuration to {}", path);
 			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.storage.save.success").append(" ").append(createClickablePath(path, name)), false);
 			return 0;

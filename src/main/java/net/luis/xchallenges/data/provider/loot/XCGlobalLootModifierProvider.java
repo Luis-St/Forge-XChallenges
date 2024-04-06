@@ -19,7 +19,9 @@
 package net.luis.xchallenges.data.provider.loot;
 
 import net.luis.xchallenges.XChallenges;
+import net.luis.xchallenges.world.loot.RandomizerLootModifier;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,12 +33,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class XCGlobalLootModifierProvider extends GlobalLootModifierProvider {
 	
+	private static final LootItemCondition[] EMPTY_CONDITIONS = new LootItemCondition[0];
+	
 	public XCGlobalLootModifierProvider(@NotNull DataGenerator generator) {
 		super(generator.getPackOutput(), XChallenges.MOD_ID);
 	}
 	
 	@Override
-	protected void start() {}
+	protected void start() {
+		this.add("randomizer_loot_modifier", new RandomizerLootModifier(EMPTY_CONDITIONS));
+	}
 	
 	@Override
 	public @NotNull String getName() {

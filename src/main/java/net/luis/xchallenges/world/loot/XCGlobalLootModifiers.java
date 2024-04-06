@@ -21,8 +21,7 @@ package net.luis.xchallenges.world.loot;
 import com.mojang.serialization.Codec;
 import net.luis.xchallenges.XChallenges;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.*;
 
 /**
  *
@@ -33,4 +32,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class XCGlobalLootModifiers {
 	
 	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, XChallenges.MOD_ID);
+	
+	public static final RegistryObject<Codec<RandomizerLootModifier>> RANDOMIZER_LOOT_MODIFIER = LOOT_MODIFIERS.register("randomizer_loot_modifier", () -> {
+		return RandomizerLootModifier.CODEC;
+	});
 }

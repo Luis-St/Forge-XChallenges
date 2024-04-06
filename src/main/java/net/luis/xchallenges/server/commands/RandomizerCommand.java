@@ -115,7 +115,7 @@ public class RandomizerCommand {
 	}
 	
 	private static boolean allowModifications(@NotNull CommandSourceStack source, @NotNull IMinecraftServer mc) {
-		if (!mc.getChallengesManager().allowModifications()) {
+		if (mc.getChallengesManager().areChallengesActive()) {
 			source.sendFailure(Component.translatable("xchallenges.error.modifications_not_allowed", "the randomizer"));
 			XChallenges.LOGGER.error("Modifications to the randomizer are not allowed while challenges are running");
 			return false;

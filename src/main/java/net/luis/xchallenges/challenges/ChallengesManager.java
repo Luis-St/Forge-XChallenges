@@ -34,7 +34,7 @@ import java.nio.file.Path;
  */
 
 public class ChallengesManager {
-
+	
 	public static final Codec<ChallengesManager> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
 		Codec.BOOL.fieldOf("running").forGetter(manager -> manager.running)
 	).apply(instance, ChallengesManager::new));
@@ -59,8 +59,8 @@ public class ChallengesManager {
 		this.running = false;
 	}
 	
-	public boolean allowModifications() {
-		return !this.running;
+	public boolean areChallengesActive() {
+		return this.running;
 	}
 	
 	public @NotNull Timer getTimer() {

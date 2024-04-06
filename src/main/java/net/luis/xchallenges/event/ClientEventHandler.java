@@ -46,8 +46,9 @@ public class ClientEventHandler {
 			XChallenges.LOGGER.error("Minecraft is not an instance of IMinecraft");
 			return;
 		}
-		if (!minecraft.isSingleplayer() || !minecraft.isPaused()) {
-			mc.getTimer().tick();
+		if ((minecraft.isSingleplayer() && minecraft.isPaused()) || mc.getTimer().isPaused()) {
+			return;
 		}
+		mc.getTimer().tick();
 	}
 }

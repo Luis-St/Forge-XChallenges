@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public class GuiMixin implements IGui {
 	
 	@Shadow
-	private Component overlayMessageString = null;
+	private Component overlayMessageString;
 	
 	@Override
 	public @Nullable Component getOverlayMessage() {

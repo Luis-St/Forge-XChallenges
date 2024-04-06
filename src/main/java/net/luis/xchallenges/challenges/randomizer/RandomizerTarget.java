@@ -35,7 +35,7 @@ public enum RandomizerTarget {
 	
 	private final String name;
 	
-	private RandomizerTarget(String name) {
+	RandomizerTarget(String name) {
 		this.name = name;
 	}
 	

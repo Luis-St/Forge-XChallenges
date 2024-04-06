@@ -150,7 +150,7 @@ public class Timer {
 	}
 	
 	public void sync() {
-		XChallenges.LOGGER.info("Syncing timer '{}' to players", this.toString());
+		XChallenges.LOGGER.info("Syncing timer '{}' to players", this);
 		XCNetworkHandler.INSTANCE.sendToPlayers(new SyncTimerPacket(this.running, this.ticks, this.currentTicks));
 	}
 	
@@ -159,12 +159,12 @@ public class Timer {
 		this.running = running;
 		this.ticks = ticks;
 		this.currentTicks = currentTicks;
-		XChallenges.LOGGER.info("Synced timer from '{}' (old, client) to '{}' (new, server)", old, this.toString());
+		XChallenges.LOGGER.info("Synced timer from '{}' (old, client) to '{}' (new, server)", old, this);
 	}
 	
 	public void save(@NotNull Path path) {
 		CodecHelper.save(this, Timer.CODEC, path);
-		XChallenges.LOGGER.info("Saved timer '{}' to '{}'", this.toString(), path);
+		XChallenges.LOGGER.info("Saved timer '{}' to '{}'", this, path);
 	}
 	//endregion
 	

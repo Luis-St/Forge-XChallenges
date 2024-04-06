@@ -39,7 +39,7 @@ import java.nio.file.Path;
 public class ServerEventHandler {
 	
 	private static final String BASE_PATH = "xchallenges";
-	private static long tick = 0;
+	private static long tick;
 	
 	@SubscribeEvent
 	public static void serverStarting(@NotNull ServerStartingEvent event) {
@@ -58,6 +58,9 @@ public class ServerEventHandler {
 		}
 		if (!(event.getServer() instanceof IMinecraftServer server)) {
 			XChallenges.LOGGER.error("Server is not an instance of IMinecraftServer");
+			return;
+		}
+		if (server.getTimer().isPaused()) {
 			return;
 		}
 		server.getTimer().tick();

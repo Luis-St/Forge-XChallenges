@@ -46,18 +46,4 @@ public class Codecs {
 			return DataResult.success(value);
 		}, value -> DataResult.success(value.name().toLowerCase()));
 	}
-	
-	public static <T> @NotNull Codec<T> forConstants(@NotNull Function<String, T> fromString) {
-		return forConstants(fromString, Object::toString);
-	}
-	
-	public static <T> @NotNull Codec<T> forConstants(@NotNull Function<String, T> fromString, @NotNull Function<T, String> toString) {
-		return Codec.STRING.flatXmap(str -> {
-			T value = fromString.apply(str.toLowerCase());
-			if (value == null) {
-				return DataResult.error(() -> "Unknown constant value: " + str.toLowerCase());
-			}
-			return DataResult.success(value);
-		}, value -> DataResult.success(toString.apply(value)));
-	}
 }

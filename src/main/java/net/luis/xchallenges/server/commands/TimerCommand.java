@@ -52,12 +52,12 @@ public class TimerCommand {
 				return execute(context.getSource(), Timer::resume, "resume");
 			})
 		).then(Commands.literal("reset").then(Commands.literal("current").executes((context) -> {
-						return execute(context.getSource(), Timer::resetCurrent, "reset_current");
-					})
-				).then(Commands.literal("default").executes((context) -> {
-						return execute(context.getSource(), Timer::resetDefault, "reset_default");
-					})
-				)
+					return execute(context.getSource(), Timer::resetCurrent, "reset_current");
+				})
+			).then(Commands.literal("default").executes((context) -> {
+					return execute(context.getSource(), Timer::resetDefault, "reset_default");
+				})
+			)
 		).then(Commands.literal("set").then(Commands.argument("time", RealTimeArgument.time(1)).executes((context) -> {
 					return make(context.getSource(), IntegerArgumentType.getInteger(context, "time"));
 				})

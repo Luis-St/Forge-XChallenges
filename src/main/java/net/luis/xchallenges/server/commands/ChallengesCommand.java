@@ -54,7 +54,7 @@ public class ChallengesCommand {
 			return -1;
 		}
 		mc.getChallengesManager().start();
-		source.sendSuccess(() -> Component.translatable("xchallenges.command.challenges.start"), false);
+		source.sendSuccess(() -> Component.translatable("command.xchallenges.challenges.start"), false);
 		return 0;
 	}
 	
@@ -65,7 +65,7 @@ public class ChallengesCommand {
 			return -1;
 		}
 		mc.getChallengesManager().stop();
-		source.sendSuccess(() -> Component.translatable("xchallenges.command.challenges.stop"), false);
+		source.sendSuccess(() -> Component.translatable("command.xchallenges.challenges.stop"), false);
 		return 0;
 	}
 }

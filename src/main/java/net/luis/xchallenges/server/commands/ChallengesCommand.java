@@ -53,7 +53,7 @@ public class ChallengesCommand {
 			XChallenges.LOGGER.error("Minecraft server is not an instance of IMinecraftServer");
 			return -1;
 		}
-		mc.getChallengesManager().start();
+		mc.getChallenges().start();
 		source.sendSuccess(() -> Component.translatable("command.xchallenges.challenges.start"), false);
 		return 0;
 	}
@@ -64,7 +64,7 @@ public class ChallengesCommand {
 			XChallenges.LOGGER.error("Minecraft server is not an instance of IMinecraftServer");
 			return -1;
 		}
-		mc.getChallengesManager().stop();
+		mc.getChallenges().stop();
 		source.sendSuccess(() -> Component.translatable("command.xchallenges.challenges.stop"), false);
 		return 0;
 	}

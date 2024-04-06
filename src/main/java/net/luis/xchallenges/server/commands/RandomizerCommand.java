@@ -38,7 +38,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  *
@@ -115,7 +116,7 @@ public class RandomizerCommand {
 	}
 	
 	private static boolean allowModifications(@NotNull CommandSourceStack source, @NotNull IMinecraftServer mc) {
-		if (mc.getChallengesManager().areChallengesActive()) {
+		if (mc.getChallenges().areChallengesActive()) {
 			source.sendFailure(Component.translatable("xchallenges.error.modifications_not_allowed", "the randomizer"));
 			XChallenges.LOGGER.error("Modifications to the randomizer are not allowed while challenges are running");
 			return false;

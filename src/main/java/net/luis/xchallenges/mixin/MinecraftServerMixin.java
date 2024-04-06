@@ -18,7 +18,7 @@
 
 package net.luis.xchallenges.mixin;
 
-import net.luis.xchallenges.challenges.ChallengesManager;
+import net.luis.xchallenges.challenges.Challenges;
 import net.luis.xchallenges.server.IMinecraftServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -42,11 +42,11 @@ public abstract class MinecraftServerMixin implements IMinecraftServer {
 	protected LevelStorageSource.LevelStorageAccess storageSource;
 	//endregion
 	
-	private final ChallengesManager challengesManager = new ChallengesManager();
+	private final Challenges manager = Challenges.create();
 	
 	@Override
-	public @NotNull ChallengesManager getChallengesManager() {
-		return this.challengesManager;
+	public @NotNull Challenges getChallenges() {
+		return this.manager;
 	}
 	
 	@Override

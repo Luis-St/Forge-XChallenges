@@ -33,24 +33,36 @@ import java.nio.file.Path;
  *
  */
 
-public class ChallengesManager {
+public class Challenges {
 	
-	public static final Codec<ChallengesManager> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+	public static final Codec<Challenges> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
 		Codec.BOOL.fieldOf("running").forGetter(manager -> manager.running)
-	).apply(instance, ChallengesManager::new));
+	).apply(instance, Challenges::new));
+	private static Challenges instance = null;
 	
 	private final Timer timer = Timer.create();
 	private final RandomizeManager randomizeManager = new RandomizeManager();
 	private boolean running;
 	
 	//region Constructors
-	public ChallengesManager() {}
+	private Challenges() {}
 	
-	private ChallengesManager(boolean running) {
+	private Challenges(boolean running) {
 		this.running = running;
 	}
 	//endregion
 	
+	public static @NotNull Challenges create() {
+		Challenges manager = new Challenges();
+		instance = manager;
+		return manager;
+	}
+	
+	public static @NotNull Challenges get() {
+		return instance;
+	}
+	
+	//region Actions
 	public void start() {
 		this.running = true;
 	}
@@ -58,6 +70,7 @@ public class ChallengesManager {
 	public void stop() {
 		this.running = false;
 	}
+	//endregion
 	
 	public boolean areChallengesActive() {
 		return this.running;
@@ -71,9 +84,15 @@ public class ChallengesManager {
 		return this.randomizeManager;
 	}
 	
+	
+	
+	
+	
+	
+	
 	//region IO operations
 	public void load(@NotNull Path path) {
-		ChallengesManager manager = CodecHelper.load(CODEC, path.resolve("challenges.json"));
+		Challenges manager = CodecHelper.load(CODEC, path.resolve("challenges.json"));
 		if (manager != null) {
 			XChallenges.LOGGER.info("Loaded challenges from {}", path.resolve("challenges.json"));
 			this.running = manager.running;

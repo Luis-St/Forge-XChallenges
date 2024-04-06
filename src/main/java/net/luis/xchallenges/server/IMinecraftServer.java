@@ -18,7 +18,7 @@
 
 package net.luis.xchallenges.server;
 
-import net.luis.xchallenges.challenges.ChallengesManager;
+import net.luis.xchallenges.challenges.Challenges;
 import net.luis.xchallenges.challenges.Timer;
 import net.luis.xchallenges.challenges.randomizer.RandomizeManager;
 import org.jetbrains.annotations.NotNull;
@@ -33,14 +33,14 @@ import java.nio.file.Path;
 
 public interface IMinecraftServer {
 	
-	@NotNull ChallengesManager getChallengesManager();
+	@NotNull Challenges getChallenges();
 	
 	default @NotNull Timer getTimer() {
-		return this.getChallengesManager().getTimer();
+		return this.getChallenges().getTimer();
 	}
 	
 	default @NotNull RandomizeManager getRandomizeManager() {
-		return this.getChallengesManager().getRandomizeManager();
+		return this.getChallenges().getRandomizeManager();
 	}
 	
 	@NotNull Path getWorldPath();

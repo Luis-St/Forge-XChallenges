@@ -48,7 +48,7 @@ public class ServerEventHandler {
 			return;
 		}
 		Path path = server.getWorldPath().resolve(BASE_PATH);
-		server.getChallengesManager().load(path);
+		server.getChallenges().load(path);
 	}
 	
 	@SubscribeEvent
@@ -77,6 +77,6 @@ public class ServerEventHandler {
 			return;
 		}
 		Path path = server.getWorldPath().resolve(BASE_PATH);
-		server.getChallengesManager().save(path);
+		server.getChallenges().save(path);
 	}
 }

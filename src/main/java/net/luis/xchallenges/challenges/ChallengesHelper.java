@@ -16,14 +16,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.luis.xchallenges.event;
+package net.luis.xchallenges.challenges;
 
-import net.luis.xchallenges.XChallenges;
-import net.luis.xchallenges.server.commands.*;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 /**
  *
@@ -31,13 +27,10 @@ import org.jetbrains.annotations.NotNull;
  *
  */
 
-@EventBusSubscriber(modid = XChallenges.MOD_ID, bus = EventBusSubscriber.Bus.FORGE)
-public class RegisterEventHandler {
+public class ChallengesHelper {
 	
-	@SubscribeEvent
-	public static void registerCommands(@NotNull RegisterCommandsEvent event) {
-		TimerCommand.register(event.getDispatcher());
-		RandomizerCommand.register(event.getDispatcher());
-		ChallengesCommand.register(event.getDispatcher());
+	@SuppressWarnings("UnstableApiUsage")
+	public static MinecraftServer getServer() {
+		return ServerLifecycleHooks.getCurrentServer();
 	}
 }

@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
  *
  */
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = XChallenges.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = XChallenges.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventHandler {
 	
 	@SubscribeEvent

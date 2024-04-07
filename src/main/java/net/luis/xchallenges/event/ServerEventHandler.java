@@ -35,7 +35,7 @@ import java.nio.file.Path;
  *
  */
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = XChallenges.MOD_ID)
+@Mod.EventBusSubscriber(modid = XChallenges.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEventHandler {
 	
 	private static final String BASE_PATH = "xchallenges";

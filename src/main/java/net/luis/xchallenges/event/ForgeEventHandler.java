@@ -32,8 +32,8 @@ import org.jetbrains.annotations.NotNull;
  *
  */
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = XChallenges.MOD_ID)
-public class PlayerEventHandler {
+@Mod.EventBusSubscriber(modid = XChallenges.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+public class ForgeEventHandler {
 	
 	@SubscribeEvent
 	public static void playerLoggedIn(PlayerEvent.@NotNull PlayerLoggedInEvent event) {

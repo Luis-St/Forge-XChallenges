@@ -22,6 +22,8 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -55,6 +57,14 @@ public abstract class RandomizerType<T> {
 	public static final RandomizerType<Item> CHEST_LOOT = create("loot", "chests", ForgeRegistries.ITEMS);
 	public static final RandomizerType<Item> ENTITY_LOOT = create("loot", "entities", ForgeRegistries.ITEMS);
 	public static final RandomizerType<Item> GAMEPLAY_LOOT = create("loot", "gameplay", ForgeRegistries.ITEMS);
+	public static final RandomizerType<VillagerTrades.ItemListing> TRADES = create("trades", "trades", () -> {
+		List<VillagerTrades.ItemListing> trades = Lists.newArrayList();
+		for (VillagerProfession profession : VillagerTrades.TRADES.keySet()) {
+			trades.addAll(RandomizerHelper.getTrades(profession));
+		}
+		trades.addAll(RandomizerHelper.getWanderingTraderTrades());
+		return trades;
+	});
 	
 	private final String group;
 	private final String name;

@@ -54,6 +54,7 @@ public abstract class RandomizerType<T> {
 	
 	public static final RandomizerType<Item> CRAFTING = create("item", "crafting", ForgeRegistries.ITEMS);
 	public static final RandomizerType<Item> SMELTING_AND_COOKING = create("item", "smelting_and_cooking", ForgeRegistries.ITEMS);
+	public static final RandomizerType<Item> STONE_CUTTING = create("item", "stone_cutting", ForgeRegistries.ITEMS);
 	public static final RandomizerType<Item> BLOCK_LOOT = create("loot", "blocks", ForgeRegistries.ITEMS);
 	public static final RandomizerType<Item> CHEST_LOOT = create("loot", "chests", ForgeRegistries.ITEMS);
 	public static final RandomizerType<Item> ENTITY_LOOT = create("loot", "entities", ForgeRegistries.ITEMS);

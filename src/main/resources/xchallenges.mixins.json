@@ -4,8 +4,14 @@
 	"compatibilityLevel": "JAVA_17",
 	"refmap": "mixins.xchallenges.refmap.json",
 	"mixins": [
+		"AbstractFurnaceBlockEntityMixin",
+		"AbstractVillagerMixin",
+		"CampfireBlockEntityMixin",
+		"CrafterBlockMixin",
+		"CrafterMenuMixin",
+		"CraftingMenuMixin",
 		"MinecraftServerMixin",
-		"AbstractVillagerMixin"
+		"StonecutterMenuMixin"
 	],
 	"client": [
 		"client.GuiMixin",

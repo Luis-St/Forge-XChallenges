@@ -18,8 +18,19 @@
 
 package net.luis.xchallenges.challenges;
 
+import net.luis.xchallenges.XChallenges;
+import net.luis.xchallenges.challenges.randomizer.RandomizerType;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
 
 /**
  *
@@ -29,8 +40,27 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class ChallengesHelper {
 	
+	private static final Field ITEM = ObfuscationReflectionHelper.findField(ItemStack.class, "f_41589_");
+	private static final Field DELEGATE = ObfuscationReflectionHelper.findField(ItemStack.class, "delegate");
+	
 	@SuppressWarnings("UnstableApiUsage")
 	public static MinecraftServer getServer() {
 		return ServerLifecycleHooks.getCurrentServer();
+	}
+	
+	public static void updateItemOfItemStack(@NotNull ItemStack stack, @NotNull Item item) {
+		try {
+			ITEM.set(stack, item);
+			DELEGATE.set(stack, ForgeRegistries.ITEMS.getDelegateOrThrow(item));
+		} catch (Exception e) {
+			XChallenges.LOGGER.error("Unable to update item of item stack '{}' to '{}'", stack, item, e);
+		}
+	}
+	
+	public static void randomizeCraftingItem(@NotNull RandomizerType<Item> type, @NotNull ItemStack stack, @Nullable ServerPlayer player) {
+		Challenges.get().getRandomizerIfActive().flatMap(randomizer -> randomizer.getIfActive(type)).ifPresent(randomizer -> {
+			Item item = randomizer.getRandomized(stack.getItem(), player);
+			updateItemOfItemStack(stack, item);
+		});
 	}
 }

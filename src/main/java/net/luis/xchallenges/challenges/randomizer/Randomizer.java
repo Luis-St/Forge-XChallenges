@@ -65,6 +65,10 @@ public class Randomizer {
 		return (RandomizerInstance<T>) this.randomizers.get(type);
 	}
 	
+	public <T> Optional<RandomizerInstance<T>> getIfActive(@NotNull RandomizerType<T> type) {
+		return Optional.ofNullable((RandomizerInstance<T>) this.randomizers.get(type));
+	}
+	
 	public <T> void create(@NotNull RandomizerType<T> type, @NotNull RandomizerTarget target) {
 		this.randomizers.put(type, RandomizerInstance.create(type, RNG.nextLong(), target));
 	}

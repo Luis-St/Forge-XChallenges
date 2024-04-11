@@ -73,26 +73,18 @@ public class RandomizerLootModifier extends LootModifier {
 	
 	@Override
 	protected @NotNull ObjectArrayList<ItemStack> doApply(@NotNull ObjectArrayList<ItemStack> generatedLoot, @NotNull LootContext context) {
-		Optional<Randomizer> optional = Challenges.get().getRandomizerIfActive();
-		if (optional.isEmpty()) {
-			return generatedLoot;
-		}
-		return optional.map(manager -> {
-			RandomizerType<Item> type = this.getType(context.getQueriedLootTableId());
-			if (!manager.has(type)) {
-				return generatedLoot;
-			}
-			return this.doRandomize(generatedLoot, manager.get(type), this.getPlayer(context));
+		return Challenges.get().getRandomizerIfActive().flatMap(randomizer -> this.getRandomizer(randomizer, context.getQueriedLootTableId())).map(instance -> {
+			return this.doRandomize(generatedLoot, instance, this.getPlayer(context));
 		}).orElse(generatedLoot);
 	}
 	
-	private @NotNull RandomizerType<Item> getType(@NotNull ResourceLocation location) {
+	private Optional<RandomizerInstance<Item>> getRandomizer(@NotNull Randomizer randomizer, @NotNull ResourceLocation location) {
 		for (Map.Entry<String, RandomizerType<Item>> entry : this.handlers.entrySet()) {
 			if (location.getPath().contains(entry.getKey())) {
-				return entry.getValue();
+				return randomizer.getIfActive(entry.getValue());
 			}
 		}
-		return RandomizerType.GAMEPLAY_LOOT;
+		return randomizer.getIfActive(RandomizerType.GAMEPLAY_LOOT);
 	}
 	
 	private @Nullable ServerPlayer getPlayer(@NotNull LootContext context) {

@@ -36,21 +36,13 @@ import java.util.Optional;
 
 public class Challenges {
 	
-	public static final Codec<Challenges> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-		Codec.BOOL.fieldOf("running").forGetter(manager -> manager.running)
-	).apply(instance, Challenges::new));
 	private static Challenges instance = null;
 	
 	private final Timer timer = Timer.create();
 	private final Randomizer randomizer = new Randomizer();
-	private boolean running;
 	
-	//region Constructors
+	//region Constructor
 	private Challenges() {}
-	
-	private Challenges(boolean running) {
-		this.running = running;
-	}
 	//endregion
 	
 	public static @NotNull Challenges create() {
@@ -63,20 +55,6 @@ public class Challenges {
 		return instance;
 	}
 	
-	//region Actions
-	public void start() {
-		this.running = true;
-	}
-	
-	public void stop() {
-		this.running = false;
-	}
-	//endregion
-	
-	public boolean areChallengesActive() {
-		return this.running;
-	}
-	
 	public @NotNull Timer getTimer() {
 		return this.timer;
 	}
@@ -85,27 +63,13 @@ public class Challenges {
 		return this.randomizer;
 	}
 	
-	public @NotNull Optional<Randomizer> getRandomizerIfActive() {
-		if (!this.areChallengesActive() || this.getRandomizer().hasNone()) {
-			return Optional.empty();
-		}
-		return Optional.of(this.getRandomizer());
-	}
-	
 	//region IO operations
 	public void load(@NotNull Path path) {
-		Challenges manager = CodecHelper.load(CODEC, path.resolve("challenges.json"));
-		if (manager != null) {
-			XChallenges.LOGGER.info("Loaded challenges from {}", path.resolve("challenges.json"));
-			this.running = manager.running;
-		}
 		this.timer.load(path.resolve("timer.json"));
 		this.randomizer.load(path, "randomizer");
 	}
 	
 	public void save(@NotNull Path path) {
-		CodecHelper.save(this, CODEC, path.resolve("challenges.json"));
-		XChallenges.LOGGER.info("Saved challenges to {}", path.resolve("challenges.json"));
 		this.timer.save(path.resolve("timer.json"));
 		this.randomizer.save(path, "randomizer");
 	}

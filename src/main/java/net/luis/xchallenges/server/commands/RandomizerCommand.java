@@ -82,6 +82,7 @@ public class RandomizerCommand {
 				)
 			);
 		}
+		
 		builder.then(Commands.literal("storage").then(Commands.literal("list").executes((context) -> {
 					return listRandomizers(context.getSource());
 				})
@@ -113,15 +114,6 @@ public class RandomizerCommand {
 		return Optional.empty();
 	}
 	
-	private static boolean allowModifications(@NotNull CommandSourceStack source, @NotNull IMinecraftServer mc) {
-		if (mc.getChallenges().areChallengesActive()) {
-			source.sendFailure(Component.translatable("xchallenges.error.modifications_not_allowed", "the randomizer"));
-			XChallenges.LOGGER.error("Modifications to the randomizer are not allowed while challenges are running");
-			return false;
-		}
-		return true;
-	}
-	
 	private static @NotNull Component createClickablePath(@NotNull Path path, @NotNull String name) {
 		String fullPath = path.toAbsolutePath().normalize().toString();
 		return ComponentUtils.wrapInSquareBrackets(Component.literal(name)).withStyle((style -> {
@@ -141,7 +133,7 @@ public class RandomizerCommand {
 	}
 	
 	private static int enableRandomizer(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type, @NotNull RandomizerTarget target) {
-		return getMinecraftServer(source).filter(mc -> allowModifications(source, mc)).map(mc -> {
+		return getMinecraftServer(source).map(mc -> {
 			if (mc.getRandomizer().has(type)) {
 				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.enable.failure", type.getName()));
 				XChallenges.LOGGER.error("Randomizer {} is already enabled", type.getName());
@@ -154,7 +146,7 @@ public class RandomizerCommand {
 	}
 	
 	private static int updateRandomizerTarget(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type, @NotNull RandomizerTarget target) {
-		return getMinecraftServer(source).filter(mc -> allowModifications(source, mc)).map(mc -> {
+		return getMinecraftServer(source).map(mc -> {
 			if (!mc.getRandomizer().has(type)) {
 				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.update_target.failure", type.getName()));
 				XChallenges.LOGGER.error("Randomizer {} is not enabled", type.getName());
@@ -167,7 +159,7 @@ public class RandomizerCommand {
 	}
 	
 	private static int disableRandomizer(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type) {
-		return getMinecraftServer(source).filter(mc -> allowModifications(source, mc)).map(mc -> {
+		return getMinecraftServer(source).map(mc -> {
 			if (mc.getRandomizer().remove(type)) {
 				source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.disable.success", type.getName()), false);
 				return 0;

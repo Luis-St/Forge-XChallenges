@@ -73,7 +73,7 @@ public class RandomizerLootModifier extends LootModifier {
 	
 	@Override
 	protected @NotNull ObjectArrayList<ItemStack> doApply(@NotNull ObjectArrayList<ItemStack> generatedLoot, @NotNull LootContext context) {
-		return Challenges.get().getRandomizerIfActive().flatMap(randomizer -> this.getRandomizer(randomizer, context.getQueriedLootTableId())).map(instance -> {
+		return this.getRandomizer(Challenges.get().getRandomizer(), context.getQueriedLootTableId()).map(instance -> {
 			return this.doRandomize(generatedLoot, instance, this.getPlayer(context));
 		}).orElse(generatedLoot);
 	}

@@ -63,14 +63,10 @@ public class XCLanguageProvider extends LanguageProvider {
 		String id = XChallenges.MOD_ID;
 		// Global errors
 		this.add(id + ".error.critical", "A critical server error occurred, please check the server log for more information");
-		this.add(id + ".error.modifications_not_allowed", "Modifications to {0} are not allowed while challenges are running");
 		// Command arguments
 		this.add("arguments." + id + ".enum.invalid", "Invalid enum provided {0}");
 		this.add("arguments." + id + ".real_time.invalid_unit", "Invalid unit provided {0}");
 		this.add("arguments." + id + ".real_time.time_too_low", "Time {0} scaled with unit {1} is too low, minimum is {2}");
-		// Challenges command
-		this.add("commands." + id + ".challenges.start", "Started challenges");
-		this.add("commands." + id + ".challenges.stop", "Stopped challenges");
 		// Timer command
 		this.add("commands." + id + ".timer.start", "Timer started");
 		this.add("commands." + id + ".timer.stop", "Timer stopped");

@@ -58,7 +58,7 @@ public class ChallengesHelper {
 	}
 	
 	public static void randomizeCraftingItem(@NotNull RandomizerType<Item> type, @NotNull ItemStack stack, @Nullable ServerPlayer player) {
-		Challenges.get().getRandomizerIfActive().flatMap(randomizer -> randomizer.getIfActive(type)).ifPresent(randomizer -> {
+		Challenges.get().getRandomizer().getIfActive(type).ifPresent(randomizer -> {
 			Item item = randomizer.getRandomized(stack.getItem(), player);
 			updateItemOfItemStack(stack, item);
 		});

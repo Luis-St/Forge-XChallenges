@@ -57,7 +57,7 @@ public abstract class AbstractVillagerMixin extends AgeableMob {
 		while (trades.size() > count) {
 			trades.remove(this.random.nextInt(trades.size()));
 		}
-		Challenges.get().getRandomizerIfActive().flatMap(randomizer -> randomizer.getIfActive(RandomizerType.TRADES)).ifPresentOrElse(instance -> {
+		Challenges.get().getRandomizer().getIfActive(RandomizerType.TRADES).ifPresentOrElse(instance -> {
 			trades.forEach(trade -> {
 				MerchantOffer offer = instance.getRandomized(trade, null).getOffer(this, this.random);
 				if (offer != null) {

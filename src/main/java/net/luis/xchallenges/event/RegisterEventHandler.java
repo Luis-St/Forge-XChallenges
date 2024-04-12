@@ -19,7 +19,8 @@
 package net.luis.xchallenges.event;
 
 import net.luis.xchallenges.XChallenges;
-import net.luis.xchallenges.server.commands.*;
+import net.luis.xchallenges.server.commands.RandomizerCommand;
+import net.luis.xchallenges.server.commands.TimerCommand;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -38,6 +39,5 @@ public class RegisterEventHandler {
 	public static void registerCommands(@NotNull RegisterCommandsEvent event) {
 		TimerCommand.register(event.getDispatcher());
 		RandomizerCommand.register(event.getDispatcher());
-		ChallengesCommand.register(event.getDispatcher());
 	}
 }

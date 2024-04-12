@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 
 public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	
-	private static final DynamicCommandExceptionType INVALID_ENUM = new DynamicCommandExceptionType(found -> Component.translatable("arguments.xchallenges.enum.invalid", found));
+	private static final DynamicCommandExceptionType INVALID = new DynamicCommandExceptionType(found -> Component.translatable("arguments.xchallenges.enum.invalid", found));
 	private final Class<T> clazz;
 	
 	private EnumArgument(Class<T> clazz) {
@@ -66,14 +66,14 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 		String name = reader.readUnquotedString();
 		T[] constants = this.clazz.getEnumConstants();
 		if (constants == null || constants.length == 0) {
-			throw INVALID_ENUM.create(name);
+			throw INVALID.create(name);
 		}
 		for (T constant : constants) {
 			if (constant.toString().equals(name)) {
 				return constant;
 			}
 		}
-		throw INVALID_ENUM.create(name);
+		throw INVALID.create(name);
 	}
 	
 	@Override

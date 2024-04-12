@@ -40,4 +40,7 @@ public class XCCommandArgumentTypes {
 	public static final RegistryObject<RealTimeArgument.Info> REAL_TIME = COMMAND_ARGUMENT_TYPES.register("real_time", () -> {
 		return ArgumentTypeInfos.registerByClass(RealTimeArgument.class, new RealTimeArgument.Info());
 	});
+	public static final RegistryObject<RandomizerTypeArgument.Info> RANDOMIZER_TYPES = COMMAND_ARGUMENT_TYPES.register("randomizer_types", () -> {
+		return ArgumentTypeInfos.registerByClass(RandomizerTypeArgument.class, new RandomizerTypeArgument.Info());
+	});
 }

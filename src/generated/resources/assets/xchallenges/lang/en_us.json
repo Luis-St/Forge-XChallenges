@@ -1,9 +1,8 @@
 {
   "arguments.xchallenges.enum.invalid": "Invalid enum provided {0}",
+  "arguments.xchallenges.randomizer_type.invalid": "Invalid randomizer type provided {0}",
   "arguments.xchallenges.real_time.invalid_unit": "Invalid unit provided {0}",
   "arguments.xchallenges.real_time.time_too_low": "Time {0} scaled with unit {1} is too low, minimum is {2}",
-  "commands.xchallenges.challenges.start": "Started challenges",
-  "commands.xchallenges.challenges.stop": "Stopped challenges",
   "commands.xchallenges.randomizer.disable.failure": "Randomizer {0} is already disabled",
   "commands.xchallenges.randomizer.disable.success": "Disabled randomizer {0}",
   "commands.xchallenges.randomizer.enable.failure": "Randomizer {0} is already enabled",
@@ -18,7 +17,7 @@
   "commands.xchallenges.randomizer.storage.list.not_found": "No randomizers found",
   "commands.xchallenges.randomizer.storage.load.failure": "Randomizer configuration {0} does not exist in {1}",
   "commands.xchallenges.randomizer.storage.load.success": "Loaded randomizer configuration {0}",
-  "commands.xchallenges.randomizer.storage.save.failure": "A configuration with the name {0} already exists in {1}",
+  "commands.xchallenges.randomizer.storage.save.failure": "A configuration with name {0} already exists in {1}",
   "commands.xchallenges.randomizer.storage.save.success": "Saved current randomizer configuration to",
   "commands.xchallenges.randomizer.update_target.failure": "Randomizer {0} is not enabled",
   "commands.xchallenges.randomizer.update_target.success": "Updated target of randomizer {0} to {1}",
@@ -29,6 +28,5 @@
   "commands.xchallenges.timer.set": "Set timer",
   "commands.xchallenges.timer.start": "Timer started",
   "commands.xchallenges.timer.stop": "Timer stopped",
-  "xchallenges.error.critical": "A critical server error occurred, please check the server log for more information",
-  "xchallenges.error.modifications_not_allowed": "Modifications to {0} are not allowed while challenges are running"
+  "xchallenges.error.critical": "A critical server error occurred, please check the server log for more information"
 }

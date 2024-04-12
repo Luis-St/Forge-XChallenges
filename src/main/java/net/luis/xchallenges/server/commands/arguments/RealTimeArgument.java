@@ -45,8 +45,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class RealTimeArgument implements ArgumentType<Integer> {
 	
-	private static final DynamicCommandExceptionType ERROR_INVALID_UNIT = new DynamicCommandExceptionType(found -> Component.translatable("arguments.xchallenges.real_time.invalid_unit", found));
-	private static final Dynamic3CommandExceptionType ERROR_TIME_TOO_LOW = new Dynamic3CommandExceptionType((found, unit, min) -> Component.translatable("arguments.xchallenges.real_time.time_too_low", found, unit, min));
+	private static final DynamicCommandExceptionType INVALID_UNIT = new DynamicCommandExceptionType(found -> Component.translatable("arguments.xchallenges.real_time.invalid_unit", found));
+	private static final Dynamic3CommandExceptionType TIME_TOO_LOW = new Dynamic3CommandExceptionType((found, unit, min) -> Component.translatable("arguments.xchallenges.real_time.time_too_low", found, unit, min));
 	private static final Collection<String> EXAMPLES = Arrays.asList("0", "0s", "0m", "0h", "0d");
 	private static final Map<String, Integer> UNITS = Util.make(Maps.newHashMap(), map -> {
 		map.put("", 60); // Default unit is minutes
@@ -74,11 +74,11 @@ public class RealTimeArgument implements ArgumentType<Integer> {
 		String unit = reader.readUnquotedString();
 		int unitValue = UNITS.getOrDefault(unit, 0);
 		if (unitValue == 0) {
-			throw ERROR_INVALID_UNIT.create(unit);
+			throw INVALID_UNIT.create(unit);
 		} else {
 			int result = value * unitValue;
 			if (result < this.min) {
-				throw ERROR_TIME_TOO_LOW.create(result, unit, this.min);
+				throw TIME_TOO_LOW.create(result, unit, this.min);
 			} else {
 				return result;
 			}

@@ -26,6 +26,7 @@ import net.luis.xchallenges.challenges.randomizer.RandomizerTarget;
 import net.luis.xchallenges.challenges.randomizer.RandomizerType;
 import net.luis.xchallenges.server.IMinecraftServer;
 import net.luis.xchallenges.server.commands.arguments.EnumArgument;
+import net.luis.xchallenges.server.commands.arguments.RandomizerTypeArgument;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -37,8 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 /**
  *
@@ -53,37 +53,28 @@ public class RandomizerCommand {
 	public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
 		LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("randomizer").requires((stack) -> {
 			return stack.hasPermission(2);
-		});
-		
-		for (RandomizerType<?> type : RandomizerType.values()) {
-			builder.then(Commands.literal("get").then(Commands.literal(type.getName()).executes((context) -> {
-						return getRandomizerStatus(context.getSource(), type);
+		}).then(Commands.literal("get").then(Commands.argument("type", RandomizerTypeArgument.argument(false)).executes((context) -> {
+					return getRandomizerStatus(context.getSource(), RandomizerTypeArgument.getSingle(context, "type"));
+				})
+			)
+		).then(Commands.literal("enable").then(Commands.argument("type", RandomizerTypeArgument.argument(true)).executes((context) -> {
+					return enableRandomizer(context.getSource(), RandomizerTypeArgument.getMulti(context, "type"), RandomizerTarget.TEAM);
+				}).then(Commands.argument("target", EnumArgument.argument(RandomizerTarget.class)).executes((context) -> {
+						return enableRandomizer(context.getSource(), RandomizerTypeArgument.getMulti(context, "type"), EnumArgument.get(context, "target", RandomizerTarget.class));
 					})
 				)
-			);
-			builder.then(Commands.literal("enable").then(Commands.literal(type.getName()).executes((context) -> {
-						return enableRandomizer(context.getSource(), type, RandomizerTarget.TEAM);
-					}).then(Commands.argument("target", EnumArgument.argument(RandomizerTarget.class)).executes((context) -> {
-							return enableRandomizer(context.getSource(), type, context.getArgument("target", RandomizerTarget.class));
-						})
-					)
-				)
-			);
-			builder.then(Commands.literal("target").then(Commands.literal(type.getName())
-					.then(Commands.argument("target", EnumArgument.argument(RandomizerTarget.class)).executes((context) -> {
-							return updateRandomizerTarget(context.getSource(), type, context.getArgument("target", RandomizerTarget.class));
-						})
-					)
-				)
-			);
-			builder.then(Commands.literal("disable").then(Commands.literal(type.getName()).executes((context) -> {
-						return disableRandomizer(context.getSource(), type);
+			)
+		).then(Commands.literal("target").then(Commands.argument("type", RandomizerTypeArgument.argument(true))
+				.then(Commands.argument("target", EnumArgument.argument(RandomizerTarget.class)).executes((context) -> {
+						return updateRandomizerTarget(context.getSource(), RandomizerTypeArgument.getMulti(context, "type"), EnumArgument.get(context, "target", RandomizerTarget.class));
 					})
 				)
-			);
-		}
-		
-		builder.then(Commands.literal("storage").then(Commands.literal("list").executes((context) -> {
+			)
+		).then(Commands.literal("disable").then(Commands.argument("type", RandomizerTypeArgument.argument(true)).executes((context) -> {
+					return disableRandomizer(context.getSource(), RandomizerTypeArgument.getMulti(context, "type"));
+				})
+			)
+		).then(Commands.literal("storage").then(Commands.literal("list").executes((context) -> {
 					return listRandomizers(context.getSource());
 				})
 			).then(Commands.literal("load").then(Commands.argument("name", StringArgumentType.word()).executes((context) -> {
@@ -132,41 +123,55 @@ public class RandomizerCommand {
 		}).orElse(-1);
 	}
 	
-	private static int enableRandomizer(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type, @NotNull RandomizerTarget target) {
+	private static int enableRandomizer(@NotNull CommandSourceStack source, @NotNull List<RandomizerType<?>> types, @NotNull RandomizerTarget target) {
 		return getMinecraftServer(source).map(mc -> {
-			if (mc.getRandomizer().has(type)) {
-				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.enable.failure", type.getName()));
-				XChallenges.LOGGER.error("Randomizer {} is already enabled", type.getName());
-				return -1;
+			for (RandomizerType<?> type : types) {
+				if (mc.getRandomizer().has(type)) {
+					if (types.size() == RandomizerType.values().size()) {
+						continue;
+					}
+					source.sendFailure(Component.translatable("commands.xchallenges.randomizer.enable.failure", type.getName()));
+					XChallenges.LOGGER.error("Randomizer {} is already enabled", type.getName());
+					continue;
+				}
+				mc.getRandomizer().create(type, target);
+				source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.enable.success", type.getName(), target), false);
 			}
-			mc.getRandomizer().create(type, target);
-			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.enable.success", type.getName(), target), false);
 			return 0;
 		}).orElse(-1);
 	}
 	
-	private static int updateRandomizerTarget(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type, @NotNull RandomizerTarget target) {
+	private static int updateRandomizerTarget(@NotNull CommandSourceStack source, @NotNull List<RandomizerType<?>> types, @NotNull RandomizerTarget target) {
 		return getMinecraftServer(source).map(mc -> {
-			if (!mc.getRandomizer().has(type)) {
-				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.update_target.failure", type.getName()));
-				XChallenges.LOGGER.error("Randomizer {} is not enabled", type.getName());
-				return -1;
+			for (RandomizerType<?> type : types) {
+				if (!mc.getRandomizer().has(type)) {
+					if (types.size() == RandomizerType.values().size()) {
+						continue;
+					}
+					source.sendFailure(Component.translatable("commands.xchallenges.randomizer.update_target.failure", type.getName()));
+					XChallenges.LOGGER.error("Randomizer {} is not enabled", type.getName());
+					continue;
+				}
+				mc.getRandomizer().get(type).setTarget(target);
+				source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.update_target.success", type.getName(), target), false);
 			}
-			mc.getRandomizer().get(type).setTarget(target);
-			source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.update_target.success", type.getName(), target), false);
 			return 0;
 		}).orElse(-1);
 	}
 	
-	private static int disableRandomizer(@NotNull CommandSourceStack source, @NotNull RandomizerType<?> type) {
+	private static int disableRandomizer(@NotNull CommandSourceStack source, @NotNull List<RandomizerType<?>> types) {
 		return getMinecraftServer(source).map(mc -> {
-			if (mc.getRandomizer().remove(type)) {
-				source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.disable.success", type.getName()), false);
-				return 0;
+			for (RandomizerType<?> type : types) {
+				if (mc.getRandomizer().remove(type)) {
+					source.sendSuccess(() -> Component.translatable("commands.xchallenges.randomizer.disable.success", type.getName()), false);
+					continue;
+				} else if (types.size() == RandomizerType.values().size()) {
+					continue;
+				}
+				source.sendFailure(Component.translatable("commands.xchallenges.randomizer.disable.failure", type.getName()));
+				XChallenges.LOGGER.error("Randomizer {} is already disabled", type.getName());
 			}
-			source.sendFailure(Component.translatable("commands.xchallenges.randomizer.disable.failure", type.getName()));
-			XChallenges.LOGGER.error("Randomizer {} is already disabled", type.getName());
-			return -1;
+			return 0;
 		}).orElse(-1);
 	}
 	

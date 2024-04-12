@@ -83,7 +83,7 @@ public class Randomizer {
 		if (loaded == null) {
 			return;
 		}
-		loaded.randomizers.forEach((type, instance) -> XChallenges.LOGGER.info("Loaded randomizer: {}", type.getUnique()));
+		loaded.randomizers.forEach((type, instance) -> XChallenges.LOGGER.info("Loaded randomizer: {}", type.getFullName()));
 		XChallenges.LOGGER.info("Loaded {} randomizers from {}", loaded.randomizers.size(), path.resolve(file + ".json"));
 		this.randomizers.clear();
 		this.randomizers.putAll(loaded.randomizers);
@@ -92,7 +92,7 @@ public class Randomizer {
 	
 	public void save(@NotNull Path path, @NotNull String file) {
 		CodecHelper.save(this, CODEC, path.resolve(file + ".json"));
-		this.randomizers.forEach((type, instance) -> XChallenges.LOGGER.info("Saved randomizer: {}", type.getUnique()));
+		this.randomizers.forEach((type, instance) -> XChallenges.LOGGER.info("Saved randomizer: {}", type.getFullName()));
 		XChallenges.LOGGER.info("Saved {} randomizers to {}", this.randomizers.size(), path.resolve(file + ".json"));
 	}
 	//endregion

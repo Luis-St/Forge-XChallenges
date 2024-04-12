@@ -21,13 +21,15 @@ package net.luis.xchallenges.challenges.randomizer;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,23 +45,19 @@ public abstract class RandomizerType<T> {
 	
 	private static final List<RandomizerType<?>> VALUES = Lists.newArrayList();
 	
-	public static final Codec<RandomizerType<?>> CODEC = Inner.CODEC.flatXmap((inner) -> {
+	public static final Codec<RandomizerType<?>> CODEC = ResourceLocation.CODEC.flatXmap(location -> {
 		for (RandomizerType<?> type : VALUES) {
-			if (type.getUnique().equals(inner.getUnique())) {
+			if (type.location.equals(location)) {
 				return DataResult.success(type);
 			}
 		}
-		return DataResult.error(() -> "Unknown randomizer type: " + inner.name());
-	}, (type) -> DataResult.success(new Inner(type.getGroup(), type.getName(), type.getType())));
+		return DataResult.error(() -> "Unknown randomizer type: " + location);
+	}, type -> DataResult.success(type.location));
 	
-	public static final RandomizerType<Item> CRAFTING = create("item", "crafting", ForgeRegistries.ITEMS);
-	public static final RandomizerType<Item> SMELTING_AND_COOKING = create("item", "smelting_and_cooking", ForgeRegistries.ITEMS);
-	public static final RandomizerType<Item> STONE_CUTTING = create("item", "stone_cutting", ForgeRegistries.ITEMS);
-	public static final RandomizerType<Item> BLOCK_LOOT = create("loot", "blocks", ForgeRegistries.ITEMS);
-	public static final RandomizerType<Item> CHEST_LOOT = create("loot", "chests", ForgeRegistries.ITEMS);
-	public static final RandomizerType<Item> ENTITY_LOOT = create("loot", "entities", ForgeRegistries.ITEMS);
-	public static final RandomizerType<Item> GAMEPLAY_LOOT = create("loot", "gameplay", ForgeRegistries.ITEMS);
-	public static final RandomizerType<VillagerTrades.ItemListing> TRADES = create("trades", "trades", () -> {
+	public static final RandomizerType<Item> CRAFTING = create("item/crafting", ForgeRegistries.ITEMS);
+	public static final RandomizerType<Item> SMELTING_AND_COOKING = create("item/smelting_and_cooking", ForgeRegistries.ITEMS);
+	public static final RandomizerType<Item> STONE_CUTTING = create("item/stone_cutting", ForgeRegistries.ITEMS);
+	public static final RandomizerType<VillagerTrades.ItemListing> TRADES = create("item/trades", () -> {
 		List<VillagerTrades.ItemListing> trades = Lists.newArrayList();
 		for (VillagerProfession profession : VillagerTrades.TRADES.keySet()) {
 			trades.addAll(RandomizerHelper.getTrades(profession));
@@ -67,50 +65,56 @@ public abstract class RandomizerType<T> {
 		trades.addAll(RandomizerHelper.getWanderingTraderTrades());
 		return trades;
 	});
+	public static final RandomizerType<Item> BLOCK_LOOT = create("loot/blocks", ForgeRegistries.ITEMS);
+	public static final RandomizerType<Item> CHEST_LOOT = create("loot/chests", ForgeRegistries.ITEMS);
+	public static final RandomizerType<Item> ENTITY_LOOT = create("loot/entities", ForgeRegistries.ITEMS);
+	public static final RandomizerType<Item> GAMEPLAY_LOOT = create("loot/gameplay", ForgeRegistries.ITEMS);
 	
-	private final String group;
-	private final String name;
-	private final String type;
+	private final ResourceLocation location;
 	
-	private RandomizerType(@NotNull String group, @NotNull String name, @NotNull String type) {
-		this.group = group.toLowerCase();
-		this.name = name.toLowerCase();
-		this.type = type.toLowerCase();
+	private RandomizerType(@NotNull ResourceLocation location) {
+		this.location = location;
 		VALUES.add(this);
 	}
 	
-	public static <T> @NotNull RandomizerType<T> create(@NotNull String group, @NotNull String name, @NotNull IForgeRegistry<T> registry) {
-		return new Registry<>(group, name, registry);
+	public static <T> @NotNull RandomizerType<T> create(@NotNull String name, @NotNull IForgeRegistry<T> registry) {
+		return new Registry<>(name, registry);
 	}
 	
-	public static <T> @NotNull RandomizerType<T> create(@NotNull String group, @NotNull String name, @NotNull Supplier<List<T>> values) {
-		return new Constants<>(group, name, values);
+	public static <T> @NotNull RandomizerType<T> create(@NotNull String name, @NotNull Supplier<List<T>> values) {
+		return new Constants<>(name, values);
 	}
 	
 	public static @NotNull List<RandomizerType<?>> values() {
 		return VALUES;
 	}
 	
-	public @NotNull String getGroup() {
-		return this.group;
-	}
-	
-	public @NotNull String getName() {
-		return this.name;
+	public static @Nullable RandomizerType<?> byFullName(@NotNull String name) {
+		for (RandomizerType<?> type : VALUES) {
+			if (type.getFullName().equals(name)) {
+				return type;
+			}
+		}
+		return null;
 	}
 	
 	public @NotNull String getType() {
-		return this.type;
+		return this.location.getNamespace();
 	}
 	
-	public @NotNull String getUnique() {
-		return this.type + ":" + this.group + "/" + this.name;
+	public @NotNull String getFullName() {
+		return this.location.getPath();
+	}
+	
+	public @NotNull String getName() {
+		String[] parts = this.location.getPath().split("/");
+		return parts[1] + " (" + parts[0] + ")";
 	}
 	
 	protected abstract @NotNull Collection<T> getValues();
 	
 	public @NotNull String toString() {
-		return this.name;
+		return this.location.toString();
 	}
 	
 	//region Implementations
@@ -118,10 +122,12 @@ public abstract class RandomizerType<T> {
 		
 		private final IForgeRegistry<T> registry;
 		
-		private Registry(String group, String name, IForgeRegistry<T> registry) {
-			super(group, name, "registry");
+		private Registry(String name, IForgeRegistry<T> registry) {
+			super(new ResourceLocation("registry", name));
 			this.registry = registry;
-			VALUES.add(this);
+			if (StringUtils.countMatches(name, "/") != 1) {
+				throw new IllegalArgumentException("Invalid registry name for randomizer type: " + name);
+			}
 		}
 		
 		public @NotNull IForgeRegistry<T> getRegistry() {
@@ -138,30 +144,17 @@ public abstract class RandomizerType<T> {
 		
 		private final Supplier<List<T>> lazy;
 		
-		private Constants(String group, String name, Supplier<List<T>> values) {
-			super(group, name, "constants");
+		private Constants(String name, Supplier<List<T>> values) {
+			super(new ResourceLocation("constants", name));
 			this.lazy = values;
-			VALUES.add(this);
+			if (StringUtils.countMatches(name, "/") != 1) {
+				throw new IllegalArgumentException("Invalid registry name for randomizer type: " + name);
+			}
 		}
 		
 		@Override
 		public @NotNull Collection<T> getValues() {
 			return this.lazy.get();
-		}
-	}
-	//endregion
-	
-	//region Internal
-	private record Inner(String group, String name, String type) {
-		
-		public static final Codec<Inner> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-			Codec.STRING.fieldOf("group").forGetter(Inner::group),
-			Codec.STRING.fieldOf("name").forGetter(Inner::name),
-			Codec.STRING.fieldOf("type").forGetter(Inner::type)
-		).apply(instance, Inner::new));
-		
-		public @NotNull String getUnique() {
-			return this.type + ":" + this.group + "/" + this.name;
 		}
 	}
 	//endregion

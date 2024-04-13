@@ -18,12 +18,7 @@
 
 package net.luis.xchallenges.server;
 
-import net.luis.xchallenges.challenges.Challenges;
-import net.luis.xchallenges.challenges.Timer;
-import net.luis.xchallenges.challenges.randomizer.Randomizer;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.file.Path;
 
 /**
  *
@@ -31,21 +26,12 @@ import java.nio.file.Path;
  *
  */
 
-public interface IMinecraftServer {
+public enum CommandBroadcastMode {
 	
-	@NotNull Challenges getChallenges();
+	ADMIN, ALL;
 	
-	default @NotNull Timer getTimer() {
-		return this.getChallenges().getTimer();
+	@Override
+	public @NotNull String toString() {
+		return this.name().toLowerCase();
 	}
-	
-	default @NotNull Randomizer getRandomizer() {
-		return this.getChallenges().getRandomizer();
-	}
-	
-	@NotNull Path getWorldPath();
-	
-	@NotNull CommandBroadcastMode getBroadcastMode();
-	
-	void setBroadcastMode(@NotNull CommandBroadcastMode mode);
 }

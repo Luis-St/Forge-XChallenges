@@ -20,6 +20,7 @@ package net.luis.xchallenges.challenges;
 
 import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.challenges.randomizer.RandomizerType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -62,5 +63,9 @@ public class ChallengesHelper {
 			Item item = randomizer.getRandomized(stack.getItem(), player);
 			updateItemOfItemStack(stack, item);
 		});
+	}
+	
+	public static void sendToAllPlayers(@NotNull String message) {
+		getServer().getPlayerList().getPlayers().forEach(player -> player.sendSystemMessage(Component.literal(message)));
 	}
 }

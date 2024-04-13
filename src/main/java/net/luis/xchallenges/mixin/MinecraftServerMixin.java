@@ -19,10 +19,12 @@
 package net.luis.xchallenges.mixin;
 
 import net.luis.xchallenges.challenges.Challenges;
+import net.luis.xchallenges.server.CommandBroadcastMode;
 import net.luis.xchallenges.server.IMinecraftServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -43,6 +45,7 @@ public abstract class MinecraftServerMixin implements IMinecraftServer {
 	//endregion
 	
 	private final Challenges manager = Challenges.create();
+	private CommandBroadcastMode broadcastMode = CommandBroadcastMode.ADMIN;
 	
 	@Override
 	public @NotNull Challenges getChallenges() {
@@ -52,5 +55,15 @@ public abstract class MinecraftServerMixin implements IMinecraftServer {
 	@Override
 	public @NotNull Path getWorldPath() {
 		return this.storageSource.getLevelDirectory().path();
+	}
+	
+	@Override
+	public @NotNull CommandBroadcastMode getBroadcastMode() {
+		return this.broadcastMode;
+	}
+	
+	@Override
+	public void setBroadcastMode(@Nullable CommandBroadcastMode mode) {
+		this.broadcastMode = mode == null ? CommandBroadcastMode.ADMIN : mode;
 	}
 }

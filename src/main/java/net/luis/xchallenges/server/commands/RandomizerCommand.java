@@ -20,7 +20,6 @@ package net.luis.xchallenges.server.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.challenges.randomizer.RandomizerTarget;
 import net.luis.xchallenges.challenges.randomizer.RandomizerType;
@@ -51,7 +50,7 @@ public class RandomizerCommand {
 	private static final String BASE_PATH = "xchallenges/user_randomizers";
 	
 	public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
-		LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("randomizer").requires((stack) -> {
+		dispatcher.register(Commands.literal("randomizer").requires((stack) -> {
 			return stack.hasPermission(2);
 		}).then(Commands.literal("get").then(Commands.argument("type", RandomizerTypeArgument.argument(false)).executes((context) -> {
 					return getRandomizerStatus(context.getSource(), RandomizerTypeArgument.getSingle(context, "type"));
@@ -90,9 +89,7 @@ public class RandomizerCommand {
 					})
 				)
 			)
-		);
-		
-		dispatcher.register(builder);
+		));
 	}
 	
 	//region Helper methods

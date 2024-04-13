@@ -18,15 +18,10 @@
 
 package net.luis.xchallenges.challenges;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.luis.xchallenges.XChallenges;
 import net.luis.xchallenges.challenges.randomizer.Randomizer;
-import net.luis.xchallenges.server.codec.CodecHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 /**
  *
@@ -36,7 +31,7 @@ import java.util.Optional;
 
 public class Challenges {
 	
-	private static Challenges instance = null;
+	private static Challenges instance;
 	
 	private final Timer timer = Timer.create();
 	private final Randomizer randomizer = new Randomizer();

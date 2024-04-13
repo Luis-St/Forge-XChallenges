@@ -1,5 +1,6 @@
 {
   "arguments.xchallenges.enum.invalid": "Invalid enum provided {0}",
+  "arguments.xchallenges.randomizer_type.all_not_allowed": "Randomizer type 'all' is not allowed in this context",
   "arguments.xchallenges.randomizer_type.invalid": "Invalid randomizer type provided {0}",
   "arguments.xchallenges.real_time.invalid_unit": "Invalid unit provided {0}",
   "arguments.xchallenges.real_time.time_too_low": "Time {0} scaled with unit {1} is too low, minimum is {2}",

@@ -29,18 +29,12 @@ import net.luis.xchallenges.server.codec.Codecs;
 
 public enum RandomizerTarget {
 	
-	ALL("all"), TEAM("team"), PLAYER("player");
+	ALL, TEAM, PLAYER;
 	
 	public static final Codec<RandomizerTarget> CODEC = Codecs.forEnum(RandomizerTarget::values);
 	
-	private final String name;
-	
-	RandomizerTarget(String name) {
-		this.name = name;
-	}
-	
 	@Override
 	public String toString() {
-		return this.name;
+		return this.name().toLowerCase();
 	}
 }

@@ -4,6 +4,7 @@
   "arguments.xchallenges.randomizer_type.invalid": "Invalid randomizer type provided {0}",
   "arguments.xchallenges.real_time.invalid_unit": "Invalid unit provided {0}",
   "arguments.xchallenges.real_time.time_too_low": "Time {0} scaled with unit {1} is too low, minimum is {2}",
+  "commands.xchallenges.broadcast.get": "Command broadcast mode is set to {0}",
   "commands.xchallenges.randomizer.disable.failure": "Randomizer {0} is already disabled",
   "commands.xchallenges.randomizer.disable.success": "Disabled randomizer {0}",
   "commands.xchallenges.randomizer.enable.failure": "Randomizer {0} is already enabled",

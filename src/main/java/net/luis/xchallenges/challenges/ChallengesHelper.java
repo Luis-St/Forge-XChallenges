@@ -23,8 +23,13 @@ import net.luis.xchallenges.challenges.randomizer.RandomizerType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.item.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -67,5 +72,10 @@ public class ChallengesHelper {
 	
 	public static void sendToAllPlayers(@NotNull String message) {
 		getServer().getPlayerList().getPlayers().forEach(player -> player.sendSystemMessage(Component.literal(message)));
+	}
+	
+	public static boolean shouldIgnoreEntity(@NotNull Entity entity) {
+		return entity instanceof Player || entity instanceof Projectile || entity instanceof EyeOfEnder || entity instanceof EvokerFangs || entity instanceof FallingBlockEntity ||
+			entity instanceof AreaEffectCloud ||entity instanceof ItemEntity || entity instanceof PartEntity<?> || entity instanceof ExperienceOrb || entity instanceof Display || entity instanceof PrimedTnt;
 	}
 }

@@ -21,7 +21,13 @@ package net.luis.xchallenges.challenges.randomizer;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import net.luis.xchallenges.XChallenges;
+import net.luis.xchallenges.challenges.ChallengesHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
@@ -33,7 +39,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -69,6 +77,7 @@ public abstract class RandomizerType<T> {
 	public static final RandomizerType<Item> CHEST_LOOT = create("loot/chests", ForgeRegistries.ITEMS);
 	public static final RandomizerType<Item> ENTITY_LOOT = create("loot/entities", ForgeRegistries.ITEMS);
 	public static final RandomizerType<Item> GAMEPLAY_LOOT = create("loot/gameplay", ForgeRegistries.ITEMS);
+	public static final RandomizerType<EntityType<?>> ENTITIES = create("world/entities", ForgeRegistries.ENTITY_TYPES);
 	
 	private final ResourceLocation location;
 	

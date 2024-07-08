@@ -115,6 +115,9 @@ public class RandomizerInstance<T> {
 			return;
 		}
 		this.cache.addAll(this.type.getValues());
+		if (this.cache.isEmpty()) {
+			throw new IllegalStateException("Randomizer type does not provide any values");
+		}
 		if (Boolean.parseBoolean(System.getProperty(PRE_SHUFFLE_PROPERTY, "true"))) {
 			Util.shuffle(this.cache, this.source);
 			XChallenges.LOGGER.info("Pre-shuffled randomizer cache");

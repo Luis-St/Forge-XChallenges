@@ -39,7 +39,7 @@ import java.nio.file.Path;
 public class ServerEventHandler {
 	
 	private static final String BASE_PATH = "xchallenges";
-	private static long tick;
+	private static long tick = 0;
 	
 	@SubscribeEvent
 	public static void serverStarting(@NotNull ServerStartingEvent event) {
